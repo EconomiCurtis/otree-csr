@@ -1,0 +1,25 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Instructions
+{% endblock %}
+
+{% block content %}
+
+
+{% include Constants.instructions_template %}
+
+
+        {% if debug %}
+        <div class="panel panel-success">
+            <div class="panel-heading">
+            debug mode only: 
+            <br><br>
+                    {% next_button %}<br><br><br><br>
+
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}

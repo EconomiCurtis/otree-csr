@@ -1,0 +1,67 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Quiz 4
+{% endblock %}
+
+{% block content %}
+
+    <p class="text-success">
+    </p>
+
+
+        <div class="panel-heading">
+                <h3>Each member of your group has 60 points available to invest.</h4>
+                <h3>How many points would <b>your group members</b> earn if <b>you</b> invest 15 points into the Individual Exchange, and 45 points into the Group Exchange?</h4>
+                <h3>Remember to add the Automatic Score. Assume that the other members place all their points in the Group Exchange.</h4>
+        </div>
+
+
+
+        <table class="table">
+                <tr>
+                <h3>
+                    <th width="45%" style="vertical-align:text-top; text-align: right; font-size:190%">
+                      <br> Your group members’ score:
+                    </th>
+                <th  width="15%" style="vertical-align:bottom;align: center;">
+                     <br> <br>       {% formfield player.quiz_04 with label="" %}  
+                </th>
+                    <th  width="50%" style="vertical-align:bottom; text-align: left">
+                  
+                    </th>
+                </tr>
+            </table>
+
+
+    {% next_button %}
+
+<script type="text/javascript">
+    document.getElementById('id_quiz_04').focus()
+</script>
+
+    <p>
+        <br><br>
+        Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a>
+    </p>
+
+    <div id='instrucs' style="display:none"> {% include Constants.instructions_template %} </div>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $("#hide").click(function(){
+            $("#instrucs").hide();
+        });
+        $("#show").click(function(){
+            $("#instrucs").show();
+        });
+    });
+    </script>
+{% endblock %}

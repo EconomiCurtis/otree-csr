@@ -1,0 +1,82 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Quiz 2 Solution
+{% endblock %}
+
+{% block content %}
+
+    <p class="text-success">
+    </p>
+
+
+        <div class="instructions well well-lg">
+                <h3>Each member of your group has 60 points available to invest.</h4>
+                <h3>How many points would youearn if <b>you</b> invest 50 points into the Individual Exchange, and 10 points into the Group Exchange?</h4>
+                <h3>Remember to add the Automatic Score. Assume that the other members place all their points in the Group Exchange.</h4>               
+                <h3>Your score?</h3>
+        </div>
+
+        <div class="panel-heading">
+                <h3><font color='green'>Correct! </font>
+                <h3>You earn 1 point for each point you invest into the Individual Exchange, 1/2 point for each point you invest into the Group Exchange, and 120 points from the Automated Score. 
+                <h3>The other team members’ investments in the Group Exhange do not affect your payoffs: </h3>
+        </div>
+
+
+
+        <style type="text/css">
+        .tg  {border-collapse:collapse;border-spacing:0;}
+        .tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+        .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+        .tg .tg-hdxh{font-weight:bold;background-color:#bde3bd;vertical-align:top}
+        .tg .tg-1m52{background-color:#bde3bd;vertical-align:top}
+        .tg .tg-yw4l{vertical-align:top}
+        .tg .tg-9hbo{font-weight:bold;vertical-align:top}
+        </style>
+        <table class="tg" align="center">
+          <tr>
+            <th class="tg-yw4l">Individual Exchange:</th>
+            <th class="tg-9hbo">50 points</th>
+          </tr>
+          <tr>
+            <td class="tg-yw4l">Group Exchange:</td>
+            <td class="tg-9hbo">5 points</td>
+          </tr>
+          <tr>
+            <td class="tg-yw4l">Automatic Score</td>
+            <td class="tg-9hbo">120 points</td>
+          </tr>
+          <tr>
+            <td class="tg-1m52">Your total score:</td>
+            <td class="tg-hdxh">175 points</td>
+          </tr>
+        </table>
+
+    {% next_button %}
+
+    <p>
+        <br><br>
+        Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a>
+    </p>
+
+    <div id='instrucs' style="display:none"> {% include Constants.instructions_template %} </div>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $("#hide").click(function(){
+            $("#instrucs").hide();
+        });
+        $("#show").click(function(){
+            $("#instrucs").show();
+        });
+    });
+    </script>
+{% endblock %}

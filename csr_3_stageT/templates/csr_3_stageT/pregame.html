@@ -1,0 +1,74 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Results
+{% endblock %}
+{% block content %}
+<!--     <p>
+        End of  round {{stage_round}} of 5
+    </p> -->
+
+    <p>
+        You are Role {{ Role_partic_var }}.
+    </p>
+    <p>
+        In Part 1 you earned {{self_ret_score}}. In Part 2 you contributed on average {{ self_overall_ge_percent|floatformat:"0" }}%, or {{self_ge|floatformat:"1"}} points.
+    </p>
+
+    <p>
+        Your counterpart is Role {{ counter_party_role }}.
+    </p>
+    <p>
+        In Part 1 that person earned {{countery_party_ret_score}}.  In Part 2 they contributed on average {{ counter_party_overall_ge_percent|floatformat:"0" }}%, or {{counter_party_ge|floatformat:"1"}} points.
+    </p>
+
+
+    <p>
+        The other two players contributed {{ges_percent_extra_2p.0|floatformat:"0" }}% and {{ges_percent_extra_2p.1|floatformat:"0" }}%, or {{ges_extra_2p.0|floatformat:"2" }} points and {{ges_extra_2p.1|floatformat:"2" }} points respectively. 
+    </p>
+
+
+    <p>
+        If all group exchange contributions remain unchanged you will earn the following, 
+    </p>
+
+
+
+    <p>
+        {% for field in form %}
+            {% formfield field %}
+        {% endfor %}
+    </p>
+
+    {% next_button %}
+
+    <p>
+        <br><br>
+        Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a>
+    </p>
+
+
+
+
+ <div id='instrucs' style="display:none">{% include Constants.instructions_template %}</div>
+
+<div></div>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $("#hide").click(function(){
+            $("#instrucs").hide();
+        });
+        $("#show").click(function(){
+            $("#instrucs").show();
+        });
+    });
+    </script>
+{% endblock %}

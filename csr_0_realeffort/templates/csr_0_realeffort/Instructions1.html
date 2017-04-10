@@ -1,0 +1,81 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Instructions
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="instructions well well-lg">
+<!--
+    <h3 class="panel-sub-heading">
+        Instructions
+    </h3> -->
+
+    <p>
+        You are about to start the <b>typing task</b>.
+    </p>
+    <p>
+        The typing task is to correctly type sequences of randomly selected letters and numbers.
+    </p>
+    <p>
+        You will have two minutes to type as many sequences as possible. Note that each character has to be correct.
+    </p>
+    <p>
+        After typing a text sequence, click the <b>Next</b> button or click the keyboard button <b>Enter</b> to submit it. Then a new text sequence will be generated.
+    </p>
+    <p>
+        The number of correctly-typed sequences is displayed on the lower part of the screen.
+    </p>
+    <p>
+        You will get points for each successfully typed sequence, as follows:
+
+        <table class="table table-bordered">
+          <tr>
+            <th class="tg-yw4l">Correctly typed text sequences</th>
+            <th class="tg-baqh">0</th>
+            <th class="tg-baqh">1</th>
+            <th class="tg-baqh">2</th>
+            <th class="tg-baqh">3</th>
+            <th class="tg-baqh">4</th>
+            <th class="tg-baqh">5</th>
+            <th class="tg-baqh">6</th>
+            <th class="tg-baqh">7</th>
+            <th class="tg-baqh">8</th>
+            <th class="tg-baqh">9</th>
+            <th class="tg-baqh">≥10</th>
+          </tr>
+          <tr>
+            <td class="tg-yw4l">Points</td>
+            <td class="tg-baqh">2</td>
+            <td class="tg-baqh">4</td>
+            <td class="tg-baqh">6</td>
+            <td class="tg-baqh">8</td>
+            <td class="tg-baqh">10</td>
+            <td class="tg-baqh">12</td>
+            <td class="tg-baqh">14</td>
+            <td class="tg-baqh">16</td>
+            <td class="tg-baqh">18</td>
+            <td class="tg-baqh">20</td>
+            <td class="tg-baqh">20</td>
+          </tr>
+        </table>
+
+    </p>
+    <p>
+    </p>
+
+
+
+
+</div>
+
+    {% if debug %}
+      In debug mode only,
+      {% next_button %}<br><br><br>
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Results
+{% endblock %}
+{% block content %}
+<!--     <p>
+        End of  round {{stage_round}} of 5
+    </p> -->
+
+    <p>
+        You are Role {{ Role_partic_var }}.
+    </p>
+    <p>
+        You and your counterparty ended up at {{ terminal_choice }}.
+    </p>
+
+
+    <p>
+        Your payoff is {{ self_round_payoff|floatformat:"2" }}.
+    </p>
+    <p>
+        Your counterpart's payoff is {{ counter_party_round_payoff|floatformat:"2" }}.
+    </p>
+
+
+    <p>
+        {% for field in form %}
+            {% formfield field %}
+        {% endfor %}
+    </p>
+
+    {% next_button %}
+
+    <p>
+        <br><br>
+        Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a>
+    </p>
+
+
+
+
+ <div id='instrucs' style="display:none">{% include Constants.instructions_template %}</div>
+
+<div></div>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $("#hide").click(function(){
+            $("#instrucs").hide();
+        });
+        $("#show").click(function(){
+            $("#instrucs").show();
+        });
+    });
+    </script>
+{% endblock %}

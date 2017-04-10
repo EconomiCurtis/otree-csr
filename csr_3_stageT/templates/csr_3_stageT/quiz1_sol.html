@@ -1,0 +1,24 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Quiz 1 Solution
+{% endblock %}
+
+{% block content %}
+
+    <p class="text-success">
+    </p>
+
+        <div class="instructions well well-lg">
+        <h3><font color="green">Correct!</font> </h3>
+        <h3>If Role F chooses <b>F1</b> when you choose <b>A2</b>, he contrubutes 1.5 times his original contribution to the Group Exchange.</h3>
+        <h3>Role F initially contrubted <b>40 points</b>, and therefore contributes <b>60 points</b> now.</h3>
+        <br>
+        </div>
+
+
+
+    {% next_button %} <br><br><br><br><br>
+
+{% endblock %}

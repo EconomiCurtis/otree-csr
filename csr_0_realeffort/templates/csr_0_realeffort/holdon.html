@@ -1,0 +1,37 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+{% load i18n %}
+
+{% block title %}
+	Wait...
+{% endblock %}
+
+
+{% block content %}
+
+<div class="instructions well well-lg">
+
+    <h2 class="panel-sub-heading">
+        
+    </h2>
+
+    <link rel="stylesheet" type="text/css"
+          href="{% static 'global/matrix.css' %}"/>
+
+
+    <h3><br>
+      Please wait for instructions from your experimenter. 
+       </h3>
+
+
+
+
+
+</div>
+
+    {% if debug %}
+      In debug mode only, 
+      {% next_button %}<br><br><br>
+    {% endif %}
+
+{% endblock %}

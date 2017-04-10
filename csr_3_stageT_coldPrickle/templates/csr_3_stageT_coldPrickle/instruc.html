@@ -1,0 +1,73 @@
+{% load otree_tags staticfiles %}
+
+
+
+
+    <div class="instructions well well-lg">
+
+        <p>
+            You are about to start <b>Part 3</b> of the study. 
+        </p>
+        <p>
+            You will first be assigned to be either a <b><font color="red">Role A</font></b> participant or a <b><font color='blue'>Role F</font></b> participant.
+        </p>
+        <p>
+            Every Role A participant will be <b>paired </b>with a Role F participant. You will have the same partner and you will <b>keep the same role</b> throughout the rest of the study.
+        </p>
+        <p>
+            You will be told how much your partner contributed (overall on average) to the Group Exchange in Part 2.
+        </p>
+<!--         <p>
+            This part of the experiment is divided into 5 identical rounds of the same type of investment game as in Part 2. In each round, both Role A and Role F participants will receive the endowment they earned in Part 1 plus an additional 60 points. In Part 1 your earnings were {{ self_ret_score }}.
+        </p> -->
+        <hr>
+        <p>
+            The Role A participant will make the first decision. He or she will choose between A1 and A2.
+        <ul>
+            <li><p><b>A1</b> means the round ends and both participants receive the amount they would have earned if they contributed to the group account equal to the average amount they contributed in Part 2.
+            <li><p><b>A2</b> means Role F will be asked to increase their contribution over and above what their average contribution to the Group Exchange in Part 2.
+        </ul>
+            <center><img src="/static/img/stage1.png"/ height="300" align="center"></center>
+
+        <hr>
+        <hr>
+        <p>
+        If the Role A participant chooses A2, then the Role F participant makes the next decision:
+        <ul>
+            <li><p><b>F1</b> means Role F increases their contribution to the group exchange in Part 2 by 1.5 times their average contribution. Role A will contribute to the group exchange their average contribution from Part 2.
+            <li><p><b>F2</b> means Role F maintains their original contribution to the group exchange. The Role A participant will then be asked to make another decision.
+        </ul>
+        <center><img src="/static/img/stage2.png"/ height="300" align="center"></center>
+        <hr>
+        <hr>
+        <p>
+            If the Role F participant chooses F2, the Role A participant chooses between A3 and A4:
+        </p>
+        <ul>
+        <li>
+            <p>If the Role A participant chooses <b>A3</b>, the round ends and both participants receive the amount they would have earned if they contributed to the group account equal to the average amount they contributed in Part 2.</p>
+        <center><img src="/static/img/stage3.png"/ height="300" align="center"></center><br><br>
+
+        </li>
+        <li>
+        <p>If the Role A participant chooses A4, the Role F participant’s payoffs will be randomly selected by the computer:
+            <ul>
+                <li><p><b>N1</b>: With probability 0.75 the Role F participant will contribute 1.5 times his or her original contribution to the Group Exchange.
+                <li><p><b>N2</b>: With probability 0.25, the Role F participant will contribute the same amount that he or she originally contributed.
+                <li><p><b>In N1 and N2 Role A</b> will contribute twice as much to the Group Exchange.</p>
+            </ul>
+        </li>
+        </ul>
+        <center><img src="/static/img/stage0.png"/ height="300" align="center"></center>
+        <p>
+            The game is demonstrated in the game tree above. 
+        <ul>
+            <li><p><font color="red">RED</font> moves are taken by the <font color='red'>Role A</font> participant, 
+            <li><p><font color="blue">BLUE</font> moves are taken by <font color='blue'>Role F</font> participant and 
+            <li><p><font color="green">GREEN</font> moves are taken by <font color="green">Nature</font>.
+        </ul>
+        </p>
+
+    </div>
+
+

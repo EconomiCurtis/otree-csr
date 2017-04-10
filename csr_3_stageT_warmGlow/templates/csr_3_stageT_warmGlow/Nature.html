@@ -1,0 +1,53 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Nature Move
+{% endblock %}
+
+{% block content %}
+
+<!-- 	<p>
+        Investment round: {{stage_round}} of 5
+    </p> -->
+
+	<p>
+		In having nature make this decision, we assume Player A selected A4. Therefore Role F participant’s payoffs would be randomly selected by the computer:
+        <ul>
+            <li><p>N1: With probability 0.75 the Role F participant will contribute 1.5 times his or her original contribution to the Group Earnings
+            <li><p>N2: With probability 0.25, the Role F participant will contribute the same amount that he or she originally contributed
+            <li><p>Role A will contribute twice as much to the Group Exchange no matter what. 
+        </ul>
+    </p>
+
+    <p>
+    	Nature has decided <font color="green"><b>{{ nature }}</b></font>.
+    </p>
+
+    {% next_button %}
+
+    <p>
+    	<br><br>
+        Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a>
+    </p>
+
+	<div id='instrucs' style="display:none"> {% include Constants.instructions_template %} </div>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $("#hide").click(function(){
+            $("#instrucs").hide();
+        });
+        $("#show").click(function(){
+            $("#instrucs").show();
+        });
+    });
+    </script>
+{% endblock %}
+

@@ -1,0 +1,60 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Round {{vcm_round_number}} Review
+{% endblock %}
+
+{% block content %}
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;border:none;margin:0px auto;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:11px 20px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:11px 20px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;}
+.tg .tg-xu5a{font-size:large;background-color:#ffffff;text-align:right}
+.tg .tg-rq3q{font-size:large;background-color:#ffffff;color:#9b9b9b}
+.tg .tg-zqy6{font-size:large;background-color:#bde3bd;vertical-align:top}
+.tg .tg-31tv{font-size:large;vertical-align:top}
+.tg .tg-3ywx{font-size:large;background-color:#ffffff;color:#9b9b9b;vertical-align:top}
+.tg .tg-q4c7{font-size:large;background-color:#ffffff;text-align:right;vertical-align:top}
+.tg .tg-mz0l{font-size:large;background-color:#bde3bd;text-align:right;vertical-align:top}
+.tg .tg-bmag{text-decoration:underline;font-size:large;background-color:#bde3bd;vertical-align:top}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-xu5a">Your individual exchange contribution:</th>
+    <th class="tg-rq3q">{{self_individual_exchange|floatformat:"2"}}</th>
+    <th class="tg-31tv">{{self_individual_exchange|floatformat:"2"}}</th>
+  </tr>
+  <tr>
+    <td class="tg-xu5a">Your group exchange contribution:</td>
+    <td class="tg-rq3q">+ 1/2 * {{self_group_exchange|floatformat:"2"}}</td>
+    <td class="tg-31tv">+ {{group_exchange_score|floatformat:"2"}}</td>
+  </tr>
+  <tr>
+    <td class="tg-xu5a">Other group members' individual exchange:</td>
+    <td class="tg-rq3q">- 1/2 * ({{op_individual_exchange_thisround|join:" + "}})</td>
+    <td class="tg-31tv">- {{score_op_individual_exchange_thisround|floatformat:"2"}}</td>
+  </tr>
+  <tr>
+    <td class="tg-xu5a">Other group members' group exchange:</td>
+    <td class="tg-rq3q">0 * ({{op_group_exchange_thisround|join:" + " }})</td>
+    <td class="tg-31tv">+ 0</td>
+  </tr>
+  <tr>
+    <td class="tg-q4c7">Automatic Earnings:</td>
+    <td class="tg-3ywx">120</td>
+    <td class="tg-31tv">+120</td>
+  </tr>
+  <tr>
+    <td class="tg-mz0l">You have received the following earnings from Round {{vcm_round_number}}:</td>
+    <td class="tg-zqy6"></td>
+    <td class="tg-bmag">{{round_points|floatformat:"2"}}</td>
+  </tr>
+</table>
+
+<br>
+    <div align="right">
+      {% next_button %}<br><br><br><br>
+    </div>
+
+{% endblock %}

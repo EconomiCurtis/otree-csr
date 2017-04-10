@@ -1,0 +1,69 @@
+{% load otree_tags staticfiles %}
+
+
+
+
+    <div class="instructions well well-lg">
+
+        <p>
+            You are about to start <b>Part 3</b> of the study. 
+        </p>
+        <p>
+            In this part, you will first be assigned to be either a <b>Role A</b> participant or a <b>Role F</b> participant. You will be informed of your role through the computer screen and you will <b>keep the same role</b> throughout the entire study.
+        </p>
+        <p>
+            Every Role A participant will be <b>paired </b>with a Role F participant throughout the study.
+        </p>
+        <p>
+            Role A participants will be told how much their Role F participant contributed (overall on average) to the Group Exchange in Part 2.
+        </p>
+<!--         <p>
+            This part of the experiment is divided into 5 identical rounds of the same type of investment game as in Part 2. In each round, both Role A and Role F participants will receive the endowment they earned in Part 1 plus an additional 60 points. In Part 1 your earnings were {{ self_ret_score }}.
+        </p> -->
+        <hr>
+        <p>
+            The Role A participant will make the first decision. He or she will choose between A1 and A2.
+        <ul>
+            <li>A1 means the round ends and both participants again receive the amount they earned during Part 2.
+            <li>A2 means Role F will be asked to increase his or her contribution over and above what s/he contributed to the Group Exchange in Part 2.
+        </ul>
+        <hr>
+        <p>
+        If the Role A participant chooses A2, then the Role F participant makes the next decision:
+        <ul>
+            <li>F1 means increasing his or her contribution to the group exchange in Part 2 by 1.5 times the original contribution. Then the round ends.
+            <li>F2 means maintaining his or her original contribution to the group exchange. The Role A participant will then be asked to make another decision.
+        </ul>
+        
+        <hr>
+        <p>
+            If the Role F participant chooses F2, the Role A participant chooses between A3 and A4:
+        </p>
+
+        <p>
+            If the Role A participant chooses A3, both participants again receive the amount they earned during Part 2.
+        </p>
+        <hr>
+        <p>
+        If the Role A participant chooses A4, the Role F participant’s payoffs will be randomly selected by the computer:
+        </p>
+        <p>
+            <ul>
+                <li>With probability 0.75 the Role F participant will contribute 1.5 times his or her original contribution to the Group Exchange.
+                <li>With probability 0.25, the Role F participant will contribute the same amount that he or she originally contributed.
+                <li>Role A will contribute twice as much to the Group Exchange.
+            </ul>
+        </p>
+        <center><img src="/static/img/stage0.png"/ height="300" align="center"></center>
+        <p>
+            The game is demonstrated in the game tree above. 
+        <ul>
+            <li><font color="red">RED</font> moves are taken by the <font color='red'>Role A</font> participant, 
+            <li><font color="blue">BLUE</font> moves are taken by <font color='blue'>Role F</font> participant and 
+            <li><font color="green">GREEN</font> moves are taken by <font color="green">Nature</font>.
+        </ul>
+        </p>
+
+    </div>
+
+

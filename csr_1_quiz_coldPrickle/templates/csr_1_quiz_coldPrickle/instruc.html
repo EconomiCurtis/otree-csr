@@ -1,0 +1,171 @@
+{% load otree_tags staticfiles %}
+
+<style type="text/css">
+.table-bordered .tg-baqh{text-align:center;vertical-align:top}
+.table-bordered .tg-yw4l{vertical-align:top}
+</style>
+
+
+<div class="instructions well well-lg">
+
+    <p>
+        You are about to start <b>Part 2</b> of the study.
+    </p>
+    <p>
+        In this part of the study you will make a series of <b>10 investment decisions</b>. For each investment decision you will be placed in a group with <b>three other participants</b>.
+    </p>
+    <p>
+        Each investment decision you make will result in an investment return. <b>One</b> of these 10 investment returns will be <b>randomly selected</b> to determine a part of your final payment at the end of the experiment. Your <b>investment returns</b> will depend on the investment decision that you and the other members of your group make.
+    </p>
+    <p>
+        You have been assigned to a group of <b>4 people</b>. For each round, you will be randomnly assigned to a new group.
+    </p>
+    <p>
+        Each of you will be given an <b>investment account</b> with the amount of points earned in Part 1 in it. You earned <b>{{ret_score}} points</b> in Part 1.
+    </p>
+    <p>
+        In each round, you will divide your points between <b>two investment opportunities</b>: the <u>Individual Exchange</u> and the <u>Group Exchange</u>.
+    </p>
+    <hr>
+    <p>
+        <h4>The Individual Exchange</h4>
+    </p>
+    <p>
+        Every point you invest in the Individual Exchange will yield you a return of one and will reduce the score of the other players by 1/2 point each.
+    </p>
+    <p>
+        <style type="text/css">
+        .table-bordered .tg-yw4l{vertical-align:top}
+        </style>
+        <table class="table table-bordered">
+          <tr>
+            <th class="tg-yw4l">Your investment into the Individual Exchange</th>
+            <th class="tg-yw4l">Your score</th>
+            <th class="tg-yw4l">Your group members’ average scores</th>
+          </tr>
+          <tr>
+            <td class="tg-yw4l">60 points</td>
+            <td class="tg-yw4l">60 points</td>
+            <td class="tg-yw4l">-30 points</td>
+          </tr>
+          <tr>
+            <td class="tg-yw4l">30 points</td>
+            <td class="tg-yw4l">30 points</td>
+            <td class="tg-yw4l">-15 points</td>
+          </tr>
+          <tr>
+            <td class="tg-yw4l">0 points</td>
+            <td class="tg-yw4l">0 points</td>
+            <td class="tg-yw4l">0 points</td>
+          </tr>
+        </table>
+    </p>
+
+    <hr>
+    
+    <p>
+       <h4>The Individual Exchange</h4> 
+    </p>
+    <p>
+        It is also true that when the other members of your group invest in the Individual Exchange, your score will be reduced by 1/2 times their investment in the Individual Exchange:
+    </p>
+    <p>
+        <style type="text/css">
+        .table-bordered .tg-yw4l{vertical-align:top}
+        </style>
+        <table class="table table-bordered">
+          <tr>
+            <th class="tg-yw4l">Your group members’ investment into the Individual Exchange</th>
+            <th class="tg-yw4l">Your score</th>
+            <th class="tg-yw4l">Your group members’ total score</th>
+          </tr>
+          <tr>
+            <td class="tg-yw4l">100 points</td>
+            <td class="tg-yw4l">-50 points</td>
+            <td class="tg-yw4l">100 points</td>
+          </tr>
+          <tr>
+            <td class="tg-yw4l">90 points</td>
+            <td class="tg-yw4l">-45 points</td>
+            <td class="tg-yw4l">90 points</td>
+          </tr>
+          <tr>
+            <td class="tg-yw4l">0 points</td>
+            <td class="tg-yw4l">0 points</td>
+            <td class="tg-yw4l">0 points</td>
+          </tr>
+        </table>
+    </p>
+
+    <hr>
+
+    <p>
+       <h4>The Group Exchange</h4> 
+    </p>
+    <p>
+        Every point you invest in the Group Exchange yields a return of 1/2 point for you. The other members of your group are not affected by your investment in the Group Exchange.
+    </p>
+    <p>
+        <style type="text/css">
+        .table-bordered .tg-yw4l{vertical-align:top}
+        </style>
+        <table class="table table-bordered">
+          <tr>
+            <th class="tg-yw4l">Your investment into the Group Exchange</th>
+            <th class="tg-yw4l">Your score</th>
+            <th class="tg-yw4l">Your group members’ scores</th>
+          </tr>
+          <tr>
+            <td class="tg-yw4l">0 points</td>
+            <td class="tg-yw4l">0 points</td>
+            <td class="tg-yw4l">0 points</td>
+          </tr>
+          <tr>
+            <td class="tg-yw4l">30 points</td>
+            <td class="tg-yw4l">15 points</td>
+            <td class="tg-yw4l">0 points</td>
+          </tr>
+          <tr>
+            <td class="tg-yw4l">60 points</td>
+            <td class="tg-yw4l">30 points</td>
+            <td class="tg-yw4l">0 points</td>
+          </tr>
+        </table>
+    </p>
+
+    <hr>
+
+    <p>
+        <h4>Automatic Score</h4>
+    </p>
+    <p>
+        In addition to the score you accumulate from the Individual Exchange and the Group Exchange, you will also get <u>Automatic </u> score. This score will <u>not</u> depend on any decisions you make, and will be the same each round.
+    </p>
+    <p>
+        Your automatic score will be <b>120 points</b> in each round. Hence, your total score in each round will be sum of your scores from the Individual Exchange, the Group Exchange and the Automatic Score.
+    </p>
+
+    <hr> 
+
+    <p>
+        <h4>The Investment Decision</h4>
+    </p>
+    <p>
+        Your task is to choose how to invest your points in the Individual Exchange and/or the Group Exchange.
+    </p>
+    <p>
+        You are free to divide the points between the two Exchanges as you wish. However, your contributions are limited to a minimum of 5% to the group exchange account and a maximum of 50% to the group exchange account. 
+    </p>
+
+    <hr>
+
+    <p>
+        <h4>The Investment Account</h4>      
+    </p>
+    <p>
+        You and every other member of your group will have <b>{{ret_score}} points</b> in your investment account each decision round.
+    </p>
+    <p>
+        The total number of points in your group in every decision round is <b>{{op_scores|join:", "}} points</b>.
+    </p>
+</div>

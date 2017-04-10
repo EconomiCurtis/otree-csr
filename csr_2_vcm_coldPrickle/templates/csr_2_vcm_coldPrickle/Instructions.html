@@ -1,0 +1,23 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Instructions to Part 2
+{% endblock %}
+
+{% block content %}
+
+    <div class="instructions well well-lg">
+
+        <p>
+            You received {{ ret_score }} points in the typing task.
+        </p>
+        <p>
+            In a moment your experimenter will start the first decision. 
+        </p>
+
+    </div>
+
+    {% next_button %}
+
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Results
+{% endblock %}
+{% block content %}
+<!--     <p>
+        End of  round {{stage_round}} of 5
+    </p> -->
+
+    <p>
+        You are {% if revwPg_self_role == 'F' %}<strong><font color="blue">Role F</font></strong>.
+        {% else %}
+        <strong><font color="red">Role A</font></strong>.
+        {% endif %}
+    </p>
+    <p>
+        You and your counterparty ended up at {{ terminal_choice }}.
+    </p>
+
+
+
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;border:none;margin:0px auto;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:11px 20px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:11px 20px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;}
+.tg .tg-xu5a{font-size:large;background-color:#ffffff;text-align:right}
+.tg .tg-rq3q{font-size:large;background-color:#ffffff;color:#9b9b9b}
+.tg .tg-zqy6{font-size:large;background-color:#bde3bd;vertical-align:top}
+.tg .tg-31tv{font-size:large;background-color:#f0f0f0;vertical-align:top}
+.tg .tg-3ywx{font-size:large;background-color:#ffffff;color:#9b9b9b;vertical-align:top}
+.tg .tg-q4c7{font-size:large;background-color:#ffffff;text-align:right;vertical-align:top}
+.tg .tg-mz0l{font-size:large;background-color:#bde3bd;text-align:right;vertical-align:top}
+.tg .tg-bmag{text-decoration:underline;font-size:large;background-color:#b2d6b2;vertical-align:top}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-xu5a">Your individual exchange contribution:</th>
+    <th class="tg-rq3q">{{self_avg_individual_exchange|floatformat:"2"}}</th>
+    <th class="tg-31tv">{{self_avg_individual_exchange|floatformat:"2"}}</th>
+  </tr>
+  <tr>
+    <td class="tg-xu5a">Your group exchange contribution:</td>
+    <td class="tg-rq3q">+ 1/2 * {{self_ge|floatformat:"2"}}</td>
+    <td class="tg-31tv">+ {{self_group_exchange_score|floatformat:"2"}}</td>
+  </tr>
+  <tr>
+    <td class="tg-xu5a">Other group members' individual exchange:</td>
+    <td class="tg-rq3q">- 1/2 * ({{op_individual_exchange|join:" + "}})</td>
+    <td class="tg-31tv">- {{score_op_individual_exchange|floatformat:"2"}}</td>
+  </tr>
+  <tr>
+    <td class="tg-xu5a">Other group members' group exchange:</td>
+    <td class="tg-rq3q">0 * ({{op_group_exchange|join:" + " }})</td>
+    <td class="tg-31tv">+ 0</td>
+  </tr>
+  <tr>
+    <td class="tg-q4c7">Automatic Earnings:</td>
+    <td class="tg-3ywx">120</td>
+    <td class="tg-31tv">+120</td>
+  </tr>
+  <tr>
+    <td class="tg-mz0l" colspan="2">You have received the following:</td>
+    <td class="tg-bmag">{{round_points|floatformat:"2"}}</td>
+  </tr>
+</table>
+
+    <p>
+        Your payoff is {{ self_round_payoff|floatformat:"2" }}.
+    </p>
+    <p>
+        Your counterpart's payoff is {{ counter_party_round_payoff|floatformat:"2" }}.
+    </p>
+
+
+    <p>
+        {% for field in form %}
+            {% formfield field %}
+        {% endfor %}
+    </p>
+
+    {% next_button %}
+
+    <p>
+        <br><br>
+        Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a>
+    </p>
+
+
+
+ <div id='reivew' style="display:none">{% include Constants.review_template %}</div>
+ <div id='instrucs' style="display:none">{% include Constants.instructions_template %}</div>
+
+<div></div>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $("#hide").click(function(){
+            $("#reivew").hide();
+            $("#instrucs").hide();
+        });
+        $("#show").click(function(){
+            $("#reivew").show();
+            $("#instrucs").show();
+        });
+    });
+    </script>
+{% endblock %}

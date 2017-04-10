@@ -1,0 +1,81 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Quiz 2
+{% endblock %}
+
+{% block content %}
+
+    <p class="text-success">
+    </p>
+        <div class="panel-heading">
+            <h3>Assume you are assigned to <b>Role F</b> and you contributed 30 points to the Common Exchange in round 2.</h3>
+            <h3>How many points would <b>you</b> contribute to the Group Exchange if you Role A chooses <b>A2</b>, you chose <b>F2</b>, and Role A chooses <b>A3</b>?</h3>
+            <h3>Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a></h3>   
+        </div>
+
+        <style type="text/css">
+        .tg  {border-collapse:collapse;border-spacing:0;border:none;margin:0px auto;}
+        .tg td{font-family:Arial, sans-serif;font-size:14px;padding:5px 5px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;}
+        .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:5px 5px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;}
+        </style>
+
+        <table class="tg">
+                <tr>
+                    <th width="50%" style="vertical-align:middle; text-align: right; font-size:100%">
+                      <br> <h3>Your earnings, in points:</h3>
+                    </th>
+                <th  width="15%" style="vertical-align:middle;align:center;">
+                     <br> <br>       {% formfield player.quiz_02 with label="" %}  
+                </th>
+                    <th  width="50%" style="vertical-align:bottom; text-align: left">
+                    <br>
+                    </th>
+                </tr>
+            </table>
+
+    <p>
+        <br><br>
+        
+    </p>
+
+    {% next_button %}<br><br><br>
+
+    <div id='instrucs' style="display:none"> {% include Constants.instructions_template %} </div>
+
+
+    {% if debug %}
+
+        <div class="box" style="background-color: #e4ffdd">
+
+            <h4><br>Cheater Mode Activated (Debug Mode Only)</h4>
+            <p>
+                The answer is 30. 
+            </p>
+        </div>
+    {% endif %}
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <!-- Force cursor to user_total form field -->
+    <script type="text/javascript">
+    document.getElementById('id_quiz_02').focus()
+    </script>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $("#hide").click(function(){
+            $("#instrucs").hide();
+        });
+        $("#show").click(function(){
+            $("#instrucs").show();
+        });
+    });
+    </script>
+{% endblock %}

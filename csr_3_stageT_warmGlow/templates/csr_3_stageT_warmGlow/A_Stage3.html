@@ -1,0 +1,71 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Select your decision
+{% endblock %}
+
+{% block content %}
+
+	<p>
+		In making this decision, assume Player F selected F2. 
+	</p>  
+
+<!-- 	<p>
+        Investment round: {{stage_round}} of 5
+    </p> -->
+    <p>
+        Your would earn {{ revwPg_round_points|floatformat:"2" }} if group exchange amounts are unchanged. Overall on average, you contribted {{self_overall_ge_percent|floatformat:"2"}}% or {{revwPg_self_ge_overallavg|floatformat:"2"}} points to the group exchange. In Part 1 you earned {{ self_ret_score }}. 
+    </p>
+
+    <p>
+        Your counterpart, Role F would earn {{revwPg_counterpart_round_points|floatformat:"2"}} if group exchange amounts are unchanged. Overall on average they contributed {{ counter_party_overall_ge_percent|floatformat:"2" }}%  or {{counter_party_ge|floatformat:"2"}} to the group exchange. In the typing task they earned {{countery_party_ret_score|floatformat:"2"}}. 
+    </p>
+
+    <p>
+        {% for field in form %}
+            {% formfield field %}
+        {% endfor %}
+    </p>
+
+    <p>If the Role A participant chooses <b>A3</b>, both participants again receive the amount they earned during Part 2.</p>
+
+    <p>If the Role A participant chooses <b>A4</b>, the Role F participant’s payoffs will be randomly selected by the computer:
+        <ul>
+            <il><p><b>N1</b>: With probability 0.75 the Role F participant will contribute 1.5 times his or her original contribution to the Group Exchange.
+            <il><p><b>N2</b>: With probability 0.25, the Role F participant will contribute the same amount that he or she originally contributed.
+            <il><p><b>In N1 and N2 Role A</b> will contribute twice as much to the Group Exchange.</p>
+        </ul>
+    </p>
+        <center><img src="/static/img/stage3.png"/ height="300" align="center"></center>
+    <p>
+
+
+    {% next_button %}
+
+
+    	<br><br>
+        <p>Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a>
+    </p>
+
+	<div id='instrucs' style="display:none"> {% include Constants.instructions_template %} </div>
+
+
+
+
+    
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $("#hide").click(function(){
+            $("#instrucs").hide();
+        });
+        $("#show").click(function(){
+            $("#instrucs").show();
+        });
+    });
+    </script>
+{% endblock %}

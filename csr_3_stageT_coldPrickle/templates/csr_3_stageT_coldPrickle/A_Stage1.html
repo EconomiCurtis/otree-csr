@@ -1,0 +1,64 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Select your decision
+{% endblock %}
+
+{% block content %}
+    <p>
+        You will be a <b><font color="red">Role A</b></font> participant for the remainder of this experiment.
+    </p>
+
+<!--     <p>
+        Investment round: {{stage_round}} of 5
+    </p> -->
+    <p>
+        Your would earn {{ revwPg_round_points|floatformat:"2" }} if group exchange amounts are unchanged. Overall on average, you contribted {{self_overall_ge_percent|floatformat:"2"}}% or {{revwPg_self_ge_overallavg|floatformat:"2"}} points to the group exchange. In Part 1 you earned {{ self_ret_score }}. 
+    </p>
+
+    <p>
+        Your counterpart, Role F would earn {{revwPg_counterpart_round_points|floatformat:"2"}} if group exchange amounts are unchanged. Overall on average they contributed {{ counter_party_overall_ge_percent|floatformat:"2" }}%  or {{counter_party_ge|floatformat:"2"}} to the group exchange. In the typing task they earned {{countery_party_ret_score|floatformat:"2"}}. 
+    </p>
+
+    <p>
+        {% for field in form %}
+            {% formfield field %}
+        {% endfor %}
+    </p>
+        
+        <ul>
+            <il><p><b>A1</b> means the round ends and both participants receive the amount they would have earned if they contributed to the group account equal to the average amount they contributed in Part 2.
+            <il><p><b>A2</b> means Role F will be asked to increase their group exchange contribution over and above what their average contribution to the Group Exchange in Part 2.
+        </ul>
+
+    <center><img src="/static/img/stage1.png"/ height="300" align="center"></center>
+
+    {% next_button %}
+
+    <p>
+        <br><br>
+        Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a>
+    </p>
+
+    <div id='instrucs' style="display:none"> {% include Constants.instructions_template %} </div>
+
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $("#hide").click(function(){
+            $("#instrucs").hide();
+        });
+        $("#show").click(function(){
+            $("#instrucs").show();
+        });
+    });
+    </script>
+{% endblock %}

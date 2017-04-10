@@ -1,0 +1,81 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Final Results
+{% endblock %}
+{% block content %}
+
+
+    <div class="panel panel-success">
+
+        <div class="panel-heading">
+            
+            <h3>
+                Your score from Part 1: {{ part1_score|floatformat:"0" }} points. 
+            </h4>
+            <h3>
+                Your score from Part 2: {{ part2_score|floatformat:"2" }} points. 
+            </h4>
+            <h3>
+                Your score from Part 3: {{ final_score|floatformat:"2" }} points.
+            </h4>
+            <hr>
+            <h3>
+                Converting points at a rate of {{point_aed_convert}} points to 1 AED, and rounding, 
+            </h3>
+            <h3>
+                from Part 2 you will receive {{ part2_cash|floatformat:"0" }} AED,
+            </h3>
+            <h3>
+                from Part 3 you will receive: {{ part3_cash|floatformat:"0" }} AED,
+            </h3>
+            <h3>
+                with a showup allowance of {{showupfee}},
+            </h3>
+            <h3>
+                Your final payment is  {{final_cash}}.
+            </h3>
+               
+            </h3>
+            <hr>
+
+
+
+        </div>
+
+<!--         <table class="table">           
+            <tr>
+                <th><center>Round #</th>
+                <th><center>Terminal Node</th>
+                <th><center>Score</th>
+            </tr>
+            {% for row in table_rows %}
+            <tr>
+                <td align="center">{{ row.00_round_number }}</td>
+                <td align="center">{{ row.05_terminal_choice }}</td>
+                <td align="center">{{ row.06_payoff }}</td>
+            </tr>
+            {% endfor %}
+
+        </table> -->
+
+    </div>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $("#hide").click(function(){
+            $("#instrucs").hide();
+        });
+        $("#show").click(function(){
+            $("#instrucs").show();
+        });
+    });
+    </script>
+{% endblock %}

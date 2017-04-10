@@ -1,0 +1,79 @@
+{% load otree_tags staticfiles %}
+
+  <div class="instructions well well-lg">
+    <p>
+        You are {% if revwPg_self_role == 'F' %}<strong><font color="blue">Role F</font></strong>.
+        {% else %}
+        <strong><font color="red">Role A</font></strong>.
+        {% endif %}
+    </p>
+    <p>
+        In Part 1 you earned {{revwPg_self_ret_score}} points. In Part 2 you contributed to the group exchange an average {{ revwPg_self_ge_percent|floatformat:"1" }}%, or {{revwPg_self_ge_overallavg|floatformat:"2"}} points.
+    </p>
+    <hr>
+    <p>
+        Your counterpart is {% if revwPg_self_role == 'F' %}<strong><font color="red">Role A</font></strong>.
+        {% else %}
+        <strong><font color="blue">Role F</font></strong>.
+        {% endif %}
+    </p>
+    <p>
+        In Part 1 that person earned {{revwPg_countery_party_ret_score}}.  In Part 2 they contributed to the group exchange an average {{ revwPg_counter_ge_percent|floatformat:"1" }}%, or {{revwPg_counter_party_ge_overallavg|floatformat:"2"}} points.
+    </p>
+
+    <hr>
+    <p>
+        The other two players in your group contributed {{revwPg_0_ges_percent_extra_2p.0|floatformat:"1" }}% and {{revwPg_0_ges_percent_extra_2p.1|floatformat:"1" }}%, or {{revwPg_0_ges_extra_2p.0|floatformat:"2" }} points and {{revwPg_0_ges_extra_2p.1|floatformat:"2" }} points respectively to the group exchange. 
+    </p>
+    <hr>
+    <p>
+        If these contributions are unchanged, then your earnings will be
+    </p>
+
+
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;border:none;margin:0px auto;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:11px 20px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:11px 20px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;}
+.tg .tg-xu5a{font-size:large;background-color:#ffffff;text-align:right}
+.tg .tg-rq3q{font-size:large;background-color:#ffffff;color:#9b9b9b}
+.tg .tg-zqy6{font-size:large;background-color:#bde3bd;vertical-align:top}
+.tg .tg-31tv{font-size:large;background-color:#f0f0f0;vertical-align:top}
+.tg .tg-3ywx{font-size:large;background-color:#ffffff;color:#9b9b9b;vertical-align:top}
+.tg .tg-q4c7{font-size:large;background-color:#ffffff;text-align:right;vertical-align:top}
+.tg .tg-mz0l{font-size:large;background-color:#bde3bd;text-align:right;vertical-align:top;color:#858585}
+.tg .tg-bmag{text-decoration:underline;font-size:large;background-color:#b2d6b2;vertical-align:top}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-xu5a">Your individual exchange contribution:</th>
+    <th class="tg-rq3q">{{revwPg_self_avg_individual_exchange|floatformat:"2"}}</th>
+    <th class="tg-31tv">{{revwPg_self_avg_individual_exchange|floatformat:"2"}}</th>
+  </tr>
+  <tr>
+    <td class="tg-xu5a">Your group exchange contribution:</td>
+    <td class="tg-rq3q">+ 1/2 * {{revwPg_self_ge|floatformat:"2"}}</td>
+    <td class="tg-31tv">+ {{revwPg_self_group_exchange_score|floatformat:"2"}}</td>
+  </tr>
+  <tr>
+    <td class="tg-xu5a">Other group members' individual exchange:</td>
+    <td class="tg-rq3q">- 1/2 * ({{revwPg_op_individual_exchange|join:" + "}})</td>
+    <td class="tg-31tv">- {{revwPg_score_op_individual_exchange|floatformat:"2"}}</td>
+  </tr>
+  <tr>
+    <td class="tg-xu5a">Other group members' group exchange:</td>
+    <td class="tg-rq3q">0 * ({{revwPg_op_group_exchange|join:" + " }})</td>
+    <td class="tg-31tv">+ 0</td>
+  </tr>
+  <tr>
+    <td class="tg-q4c7">Automatic Earnings:</td>
+    <td class="tg-3ywx">120</td>
+    <td class="tg-31tv">+120</td>
+  </tr>
+  <tr>
+    <td class="tg-mz0l" colspan="2">You have received the following:</td>
+    <td class="tg-bmag">{{revwPg_round_points|floatformat:"2"}}</td>
+  </tr>
+</table>
+</div>

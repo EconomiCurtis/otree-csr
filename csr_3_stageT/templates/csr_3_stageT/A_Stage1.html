@@ -1,0 +1,59 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Select your decision
+{% endblock %}
+
+{% block content %}
+    <p>
+        You will be a <b><font color="red">Role A</b></font> participant for the remainder of this experiment.
+    </p>
+
+<!--     <p>
+        Investment round: {{stage_round}} of 5
+    </p> -->
+    <p>
+        Your earned {{ self_score|floatformat:"2" }} in the randomly chosen paid round in Part 2. Overall on average, you contribted {{self_overall_ge_percent|floatformat:"2"}}% to the group exchange. In Part 1 you earned {{ self_ret_score }}. 
+    </p>
+
+    <p>
+        Your counterpart, Role F earned {{counter_party_score|floatformat:"2"}} in the randomly chosen paid round in Part 2. Overall on average they contributed {{ counter_party_overall_ge_percent|floatformat:"2" }}% to the group exchange. In the typing task they earned {{countery_party_ret_score|floatformat:"2"}}. 
+    </p>
+
+    <p>
+        {% for field in form %}
+            {% formfield field %}
+        {% endfor %}
+    </p>
+        
+    <center><img src="/static/img/stage1.png"/ height="300" align="center"></center>
+
+    {% next_button %}
+
+    <p>
+        <br><br>
+        Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a>
+    </p>
+
+    <div id='instrucs' style="display:none"> {% include Constants.instructions_template %} </div>
+
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $("#hide").click(function(){
+            $("#instrucs").hide();
+        });
+        $("#show").click(function(){
+            $("#instrucs").show();
+        });
+    });
+    </script>
+{% endblock %}
