@@ -1,0 +1,65 @@
+{% load otree_tags staticfiles %}
+{% load mathfilters %}
+    <p class="text-success">
+    </p>
+
+    <div class="instructions well well-lg">
+        {% autoescape off %}   {{ player.quiz_text }}  {% endautoescape %}
+    </div>
+
+        <div class="panel-heading">
+                <h3><font color='green'>Correct! </font>
+                <h3>You earn 1 point for each point you invest into the Individual Exchange, {{session.config.mpcr}} point for each point you invest into the Group Exchange, and {{session.config.mpcr}} point for each point that your other group members invested into the Group Exhange:</h3>
+        </div>
+
+
+
+          <style type="text/css">
+        .tg  {border-collapse:collapse;border-spacing:0;border:none;margin:0px auto;}
+        .tg td{font-family:Arial, sans-serif;font-size:14px;padding:11px 20px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;}
+        .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:11px 20px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;}
+        .tg .tg-xu5a{font-size:large;background-color:#ffffff;text-align:right}
+        .tg .tg-rq3q{font-size:large;background-color:#ffffff;color:#9b9b9b}
+        .tg .tg-zqy6{font-size:large;background-color:#bde3bd;vertical-align:top}
+        .tg .tg-31tv{font-size:large;vertical-align:top;background-color: #e8e8e8;}
+        .tg .tg-3ywx{font-size:large;background-color:#ffffff;color:#9b9b9b;vertical-align:top}
+        .tg .tg-q4c7{font-size:large;background-color:#ffffff;text-align:right;vertical-align:top}
+        .tg .tg-mz0l{font-size:large;background-color:#bde3bd;text-align:right;vertical-align:top;color:#a0a0a0;}
+        .tg .tg-bmag{text-decoration:underline;font-size:large;background-color:#a8cca8;vertical-align:top}
+        </style>
+        <table class="tg">
+          <tr>
+            <th class="tg-xu5a">Your individual exchange contribution:</th>
+            <th class="tg-rq3q">0</th>
+            <th class="tg-31tv">0</th>
+          </tr>
+          <tr>
+            <td class="tg-xu5a">Your group exchange contribution:</td>
+            <td class="tg-rq3q">+ {{session.config.mpcr}} * 20</td>
+            <td class="tg-31tv">+ {{session.config.mpcr|mul:20}}</td>
+          </tr>
+          <tr>
+            <td class="tg-xu5a">Other group members' individual exchange:</td>
+            <td class="tg-rq3q">+ 0 * (10 + 10 + 10) </td>
+            <td class="tg-31tv">+ 0 </td>
+          </tr>
+          <tr>
+            <td class="tg-xu5a">Other group members' group exchange:</td>
+            <td class="tg-rq3q">{{session.config.mpcr}} * (10 + 10 + 10)</td>
+            <td class="tg-31tv">+ {{session.config.mpcr|mul:30}}</td>
+          </tr>
+          <tr>
+            <td class="tg-mz0l" colspan="2">Your score:</td>
+            <td class="tg-bmag">{{session.config.mpcr|mul:50}}</td>
+          </tr>
+        </table>
+
+
+    {% next_button %}
+
+    <p>
+        <br><br>
+        Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a>
+    </p>
+
+    <div id='instrucs' style="display:none"> {% include Constants.instructions_template %} </div>

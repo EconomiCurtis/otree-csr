@@ -1,0 +1,35 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    {{ page_title }}
+{% endblock %}
+
+{% block content %}
+
+  {% include player.quiz_sol_text %}
+
+
+  <p>
+      <br><br>
+      Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a>
+  </p>
+
+  <div id='instrucs' style="display:none"> {% include Constants.instructions_template %} </div>
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $("#hide").click(function(){
+            $("#instrucs").hide();
+        });
+        $("#show").click(function(){
+            $("#instrucs").show();
+        });
+    });
+    </script>
+{% endblock %}

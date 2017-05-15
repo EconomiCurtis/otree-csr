@@ -5,7 +5,7 @@
 {% block global_styles  %}
 <style>
 body {
-    background-color: #fcfcff;
+    background-color: #f7f7fc;
 /*  background-image: url(
         "https://nyuad.nyu.edu/content/nyuad/en/home/academics/faculty/nikos-nikiforakis/_jcr_content/column3_1/image/image.3.jpg/1475674295792.jpg");  */
 }
@@ -43,10 +43,59 @@ input[type=submit] {
     border-radius: 50px; 
     font-size:120%;
 }
+input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    border-radius: 8px;
+    height: 30px;
+    border: 2px solid #dee7ed;
+    background-color: #fff; 
+    -webkit-animation: flash linear 1s infinite;
+    animation: flash linear 1s infinite;
+}
 
+span[class="input-group-addon"]{
+    
+  -webkit-appearance: none;
+  border-radius: 8px;
+  height: 30px;
+  border: 2px solid #dee7ed;
+}
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    background-color: red;
+    border: 4px solid red;
+    width: 200px;
+    height: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    color:#f2f;
+    -webkit-animation: flash linear 2s infinite;
+    animation: flash linear 2s infinite;
+}
+
+@-webkit-keyframes flash {
+    0% { opacity: 1; } 
+    50% { opacity: .1; } 
+    100% { opacity: 1; }
+}
+@keyframes flash {
+    0% { opacity: 1; } 
+    50% { opacity: .1; } 
+    100% { opacity: 1; }
+}
 .control-label{
     font-size: 125%;
 }
+
+
+
+
+
+
+
+
+
 </style>
 {% endblock %}
 

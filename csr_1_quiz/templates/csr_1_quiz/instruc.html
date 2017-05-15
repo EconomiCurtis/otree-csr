@@ -1,4 +1,5 @@
 {% load otree_tags staticfiles %}
+{% load mathfilters %}
 
 <style type="text/css">
 .table-bordered .tg-baqh{text-align:center;vertical-align:top}
@@ -13,10 +14,10 @@
         You are about to start <b>Part 2</b> of the study.
     </p>
     <p>
-        In this part of the study you will make a series of <b>10 investment decisions</b>. For each investment decision you will be placed in a group with <b>three other participants</b>.
+        In this part of the study you will make a series of <b>{{ session.config.vcm_round_count }} investment decisions</b>. For each investment decision you will be placed in a group with <b>three other participants</b>.
     </p>
     <p>
-        Each investment decision you make will result in an investment return. <b>One</b> of these 10 investment returns will be <b>randomly selected</b> to determine a part of your final payment at the end of the experiment. Your <b>investment returns</b> will depend on the investment decision that you and the other members of your group make.
+        Each investment decision you make will result in an investment return. <b>One</b> of these {{ session.config.vcm_round_count }} investment returns will be <b>randomly selected</b> to determine a part of your final payment at the end of the experiment. Your <b>investment returns</b> will depend on the investment decision that you and the other members of your group make.
     </p>
     <p>
         You have been assigned to a group of <b>4 people</b>. For each round, you will be randomnly assigned to a new group.
@@ -41,17 +42,17 @@
         <table class="table table-bordered">
           <tr>
             <th class="tg-yw4l">Your investment into the Individual Exchange</th>
-            <th class="tg-yw4l">Your score</th>
-            <th class="tg-yw4l">Your group members’ average scores</th>
+            <th class="tg-yw4l">Addition to your score from your Individual Exchange contribution</th>
+            <th class="tg-yw4l">Addition to your group members’ score from the Individual Exchange contribution</th>
           </tr>
           <tr>
-            <td class="tg-yw4l">60 points</td>
-            <td class="tg-yw4l">60 points</td>
+            <td class="tg-yw4l">20 points</td>
+            <td class="tg-yw4l">20 points</td>
             <td class="tg-yw4l">0 points</td>
           </tr>
           <tr>
-            <td class="tg-yw4l">30 points</td>
-            <td class="tg-yw4l">30 points</td>
+            <td class="tg-yw4l">10 points</td>
+            <td class="tg-yw4l">10 points</td>
             <td class="tg-yw4l">0 points</td>
           </tr>
           <tr>
@@ -76,22 +77,18 @@
         </style>
         <table class="table table-bordered">
           <tr>
-            <th class="tg-yw4l">Your group members’ investment into the Individual Exchange</th>
-            <th class="tg-yw4l">Your score</th>
-            <th class="tg-yw4l">Your group members’ total scores</th>
+            <th class="tg-yw4l">Your group member's total Individual Exchange contributions</th>
+            <th class="tg-yw4l">Addition to your score from your group member's Individual Exchange contributions</th>
           </tr>
           <tr>
-            <td class="tg-yw4l">180 points</td>
+            <td class="tg-yw4l">60 points</td>
             <td class="tg-yw4l">0 points</td>
-            <td class="tg-yw4l">180 points</td>
           </tr>
           <tr>
-            <td class="tg-yw4l">90 points</td>
+            <td class="tg-yw4l">30 points</td>
             <td class="tg-yw4l">0 points</td>
-            <td class="tg-yw4l">90 points</td>
           </tr>
           <tr>
-            <td class="tg-yw4l">0 points</td>
             <td class="tg-yw4l">0 points</td>
             <td class="tg-yw4l">0 points</td>
           </tr>
@@ -107,7 +104,7 @@
         Your score from the Group Exchange will depend on the total investment you and your group members make.
     </p>
     <p>
-        Every point that you or a group member invests yields 1/2 point for <em>each</em> member, <em>not just the person who invested it</em>.
+        Every point that you or a group member invests yields {{session.config.mpcr}} point to <em>each</em> member, <em>not just the member who invested it</em>.
     </p>
     <p>
         <style type="text/css">
@@ -116,18 +113,18 @@
         <table class="table table-bordered">
           <tr>
             <th class="tg-yw4l">Your investment into the Group Exchange</th>
-            <th class="tg-yw4l">Your score</th>
-            <th class="tg-yw4l">Points to <em>each</em> of your group members</th>
+            <th class="tg-yw4l">Added to your score from your Group Exchange contribution</th>
+            <th class="tg-yw4l">Points to <em>each</em> of your group members score from your group exchange contribution</th>
           </tr>
           <tr>
             <td class="tg-yw4l">60 points</td>
-            <td class="tg-yw4l">30 points</td>
-            <td class="tg-yw4l">30 points</td>
+            <td class="tg-yw4l">{{session.config.mpcr|mul:60}} points</td>
+            <td class="tg-yw4l">{{session.config.mpcr|mul:60}} points</td>
           </tr>
           <tr>
             <td class="tg-yw4l">30 points</td>
-            <td class="tg-yw4l">15 points</td>
-            <td class="tg-yw4l">15 points</td>
+            <td class="tg-yw4l">{{session.config.mpcr|mul:30}} points</td>
+            <td class="tg-yw4l">{{session.config.mpcr|mul:30}} points</td>
           </tr>
           <tr>
             <td class="tg-yw4l">0 points</td>
@@ -138,8 +135,56 @@
     </p>
 
     <hr>
+    <h4>Example</h4>
 
+    <p>For example, suppose you start with 20 points, and each of the other three members of your group also have 20 points. </p>
 
+    <p>You decide to invest 10 points into the Individual Exchange, with the remaining 10 points go to the Group Exchange. </p>
+
+    <p>Suppose that the other members of your group do the same, giving 10 points each (30 points total) to the Individual Exchange
+    and 10 points each (30 points total) to the group exchange. Your payoff will be determined as the following, </p>
+
+           <style type="text/css">
+        .tg  {border-collapse:collapse;border-spacing:0;border:none;margin:0px auto;}
+        .tg td{font-family:Arial, sans-serif;font-size:14px;padding:11px 20px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;}
+        .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:11px 20px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;}
+        .tg .tg-xu5a{font-size:large;background-color:#ffffff;text-align:right}
+        .tg .tg-rq3q{font-size:large;background-color:#ffffff;color:#9b9b9b}
+        .tg .tg-zqy6{font-size:large;background-color:#bde3bd;vertical-align:top}
+        .tg .tg-31tv{font-size:large;vertical-align:top;background-color: #e8e8e8;}
+        .tg .tg-3ywx{font-size:large;background-color:#ffffff;color:#9b9b9b;vertical-align:top}
+        .tg .tg-q4c7{font-size:large;background-color:#ffffff;text-align:right;vertical-align:top}
+        .tg .tg-mz0l{font-size:large;background-color:#bde3bd;text-align:right;vertical-align:top;color:#a0a0a0;}
+        .tg .tg-bmag{text-decoration:underline;font-size:large;background-color:#a8cca8;vertical-align:top}
+        </style>
+        <table class="tg">
+          <tr>
+            <th class="tg-xu5a">Your individual exchange contribution:</th>
+            <th class="tg-rq3q">10</th>
+            <th class="tg-31tv">10</th>
+          </tr>
+          <tr>
+            <td class="tg-xu5a">Your group exchange contribution:</td>
+            <td class="tg-rq3q">+ {{session.config.mpcr}} * 10</td>
+            <td class="tg-31tv">+ {{session.config.mpcr|mul:10}}</td>
+          </tr>
+          <tr>
+            <td class="tg-xu5a">Other group members' individual exchange:</td>
+            <td class="tg-rq3q">+ 0 * (10 + 10 + 10) </td>
+            <td class="tg-31tv">+ 0</td>
+          </tr>
+          <tr>
+            <td class="tg-xu5a">Other group members' group exchange:</td>
+            <td class="tg-rq3q">{{session.config.mpcr}} * (10 + 10 + 10)</td>
+            <td class="tg-31tv">+ {{session.config.mpcr|mul:30}}</td>
+          </tr>
+          <tr>
+            <td class="tg-mz0l" colspan="2">Your score:</td>
+            <td class="tg-bmag">{{session.config.mpcr|mul:40|add:10}}</td>
+          </tr>
+        </table>
+
+    <hr>
 
     <p>
         <h4>The Investment Decision</h4>
@@ -148,13 +193,13 @@
         Your task is to choose how to invest your points in the Individual Exchange and/or the Group Exchange.
     </p>
     <p>
-        You are free to divide the points between the two Exchanges as you wish. However, your contributions are limited to a minimum of 5% to the group exchange account and a maximum of 50% to the group exchange account.
+        You are free to divide the points between the two Exchanges as you wish. However, your contributions are limited to a minimum of {{session.config.GE_min}}% to the group exchange account and a maximum of {{session.config.GE_max}}% to the group exchange account.
     </p>
 
     <hr>
 
     <p>
-        You and every other member of your group will have <b>{{ret_score}} points</b> in your investment account each decision round.
+        You will have <b>{{ret_score}} points</b> in your investment account each decision round.
     </p>
     <p>
         The other scores in your group are <b>{{op_scores|join:", "}} points</b>.

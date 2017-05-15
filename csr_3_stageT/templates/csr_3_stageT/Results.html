@@ -1,5 +1,6 @@
 {% extends "global/BaseCSR.html" %}
 {% load staticfiles otree_tags %}
+{% load mathfilters %}
 
 {% block title %}
     Results
@@ -21,9 +22,15 @@
         Your payoff is {{ self_round_payoff|floatformat:"2" }}.
     </p>
     <p>
+    <font color='red'><strong>You left off here!!</strong></font>
         Your counterpart's payoff is {{ counter_party_round_payoff|floatformat:"2" }}.
     </p>
-
+    <p>
+        Passive Player 1 received .
+    </p>
+    <p>
+        Your counterpart's payoff is {{ counter_party_round_payoff|floatformat:"2" }}.
+    </p>
 
     <p>
         {% for field in form %}

@@ -1,5 +1,6 @@
 {% extends "global/BaseCSR.html" %}
 {% load staticfiles otree_tags %}
+{% load mathfilters %}
 
 {% block title %}
     Quiz 2
@@ -10,8 +11,8 @@
     <p class="text-success">
     </p>
         <div class="panel-heading">
-            <h3>Assume you are assigned to <b>Role F</b> and you contributed 40 points to the Common Exchange in round 2.</h3>
-                <h3>How many points would <b>you</b> contribute to the Group Exchange if you Role A chooses <b>A2</b>, you choose <b>F2</b>, and Role A chooses <b>A3</b>?</h3>
+                <h3>Please answer the following questions,</h3>
+                <h2>See text from instructions below for help.</h2>
         </div>
 
         <style type="text/css">
@@ -21,19 +22,18 @@
         </style>
 
         <table class="tg">
+        {% for field in form %}
                 <tr>
                     <th width="50%" style="vertical-align:middle; text-align: right; font-size:100%">
-                      <br> <h3>Your earnings, in points:</h3>
+                      <br> <h3>{{field.label}}:</h3>
                     </th>
-                <th  width="15%" style="vertical-align:middle;align:center;">
-                     <br> <br>       {% formfield player.quiz_02 with label="" %}  
-                </th>
-                    <th  width="50%" style="vertical-align:bottom; text-align: left">
-                    <br>
+                <th  width="50%" style="vertical-align:middle;align: center;">
+                     <br> <br>       {{field}} 
+                    <font color="red">{{ field.errors }} </font> 
                     </th>
                 </tr>
+                {% endfor %}
             </table>
-
     <p>
         <br><br>
         Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a>
@@ -43,14 +43,32 @@
 
     <div id='instrucs' style="display:none"> {% include Constants.instructions_template %} </div>
 
-
     {% if debug %}
 
         <div class="box" style="background-color: #e4ffdd">
 
             <h4><br>Cheater Mode Activated (Debug Mode Only)</h4>
             <p>
-                The answer is 40. 
+            {% with F_GE=session.config.GE_Low_F|mul:session.config.F1_F_mult %}
+            {% with GE=session.config.GE_Low_A|add:F_GE|add:40 %}
+            {% with F_IE=20|sub:F_GE%}
+
+                q1: {{session.config.mpcr|mul:GE|addition:20|sub:session.config.GE_Low_A|sub:session.config.boycott_cost }} <br>
+                q2: {{session.config.mpcr|mul:GE|addition:F_IE}} <br>
+
+            {% endwith %}            {% endwith %}            {% endwith %}
+
+
+            {% with F_GE=session.config.GE_Low_F %}
+            {% with GE=session.config.GE_Low_A|add:F_GE|add:40 %}
+            {% with F_IE=20|sub:F_GE%}
+
+                q3: {{session.config.GE_Low_A|add:session.config.GE_Low_F|addition:40|mul:session.config.mpcr|addition:20|sub:session.config.GE_Low_A|sub:session.config.boycott_cost }} <br>
+                q4: {{session.config.GE_Low_A|add:session.config.GE_Low_F|addition:40|mul:session.config.mpcr|addition:20|sub:session.config.GE_Low_F}} <br>
+                q5: {{ session.config.N1_prob }} <br>
+
+            {% endwith %}            {% endwith %}            {% endwith %}
+
             </p>
         </div>
     {% endif %}

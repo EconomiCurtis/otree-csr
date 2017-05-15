@@ -1,8 +1,9 @@
 {% extends "global/BaseCSR.html" %}
 {% load staticfiles otree_tags %}
+{% load mathfilters %}
 
 {% block title %}
-    Select your decision
+    Round {{stage_round}} of {{ session.config.stage_round_count }} - Select your decision
 {% endblock %}
 
 {% block content %}
@@ -10,24 +11,88 @@
         You will be a <b><font color="red">Role A</b></font> participant for the remainder of this experiment.
     </p>
 
-<!--     <p>
-        Investment round: {{stage_round}} of 5
-    </p> -->
     <p>
-        Your earned {{ self_score|floatformat:"2" }} in the randomly chosen paid round in Part 2. Overall on average, you contribted {{self_overall_ge_percent|floatformat:"2"}}% to the group exchange. In Part 1 you earned {{ self_ret_score }}. 
+        In Part 2 you contributed on average {{ participant.vars.overall_ge_percent|mul:100|floatformat:"0" }}%. 
+        Your counterpart, Role F overall on average  contributed {{ counter_party_overall_ge_percent|floatformat:"2" }}% to the group exchange.
+    </p>
+     
+    <ul>   
+    <p>
+        <label for="id_A_stage1_1"><input type="radio" id="id_A_stage1_1" value="A1" name="A_stage1" required="">
+        A1</label> - see Baseline Scores in instructions below. 
     </p>
 
-    <p>
-        Your counterpart, Role F earned {{counter_party_score|floatformat:"2"}} in the randomly chosen paid round in Part 2. Overall on average they contributed {{ counter_party_overall_ge_percent|floatformat:"2" }}% to the group exchange. In the typing task they earned {{countery_party_ret_score|floatformat:"2"}}. 
-    </p>
+        <style type="text/css">
+        .tg  {border-collapse:collapse;border-spacing:0;border:none;margin:0px auto;}
+        .tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;}
+        .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;}
+        .tg .tg-cwv5{background-color:#ffffff;text-align:right;vertical-align:top}
+        .tg .tg-5jn8{font-weight:bold;font-size:large;vertical-align:top}
+        .tg .tg-uj5g{background-color:#e7e5e5;text-align:center;vertical-align:top}
+        .tg .tg-cfx1{background-color:#e7e5e5;color:#9b9b9b;text-align:center;vertical-align:top}
+        .tg .tg-3gle{font-weight:bold;background-color:#f4e8e8;color:#fe0000;text-align:center;vertical-align:top}
+        .tg .tg-27w5{font-weight:bold;background-color:#e1e5f2;color:#3166ff;text-align:center;vertical-align:top}
+        .tg .tg-km61{background-color:#eeeeee;color:#9b9b9b;text-align:center;vertical-align:top}
+        .tg .tg-2idc{text-decoration:underline;background-color:#ffffff;text-align:center;vertical-align:top}
+        .tg .tg-8nce{background-color:#f4e8e8;text-align:center;vertical-align:top}
+        .tg .tg-8nce2{background-color:#f0c0c0;text-align:center;vertical-align:top}
+        .tg .tg-42ua{background-color:#e1e5f2;text-align:center;vertical-align:top}
+        .tg .tg-42ua2{background-color:#bfc9ec;text-align:center;vertical-align:top}
+        .tg .tg-549m{background-color:#eeeeee;text-align:center;vertical-align:top}
+        .tg .tg-i81m{background-color:#ffffff;text-align:center;vertical-align:top}
+        </style>
+        <table class="tg">
+          <tr>
+            <th class="tg-5jn8" colspan="6">Baseline Scores with A1 Selected</th>
+          </tr>
+          <tr>
+            {% with F_GE=session.config.GE_Low_F %}
+            {% with GE=session.config.GE_Low_A|add:F_GE|add:40 %}
+            {% with F_IE=20|sub:F_GE%}
+            <td class="tg-cwv5"></td>
+            <td class="tg-3gle">Role A</td>
+            <td class="tg-27w5">Role F</td>
+            <td class="tg-km61">Passive Player 1</td>
+            <td class="tg-cfx1">Passive Player 2</td>
+            <td class="tg-2idc">Total</td>
+          </tr>
+          <tr>
+            <td class="tg-cwv5">Group Exchange Contribution:</td>
+            <td class="tg-8nce">{{session.config.GE_Low_A}}</td>
+            <td class="tg-42ua">{{session.config.GE_Low_F}}</td>
+            <td class="tg-549m">20</td>
+            <td class="tg-uj5g">20</td>
+            <td class="tg-i81m">{{GE}}</td>
+          </tr>
+          <tr>
+            <td class="tg-cwv5">Individual Exchange Contribution:</td>
+            <td class="tg-8nce">{{20|sub:session.config.GE_Low_A}}</td>
+            <td class="tg-42ua">{{20|sub:session.config.GE_Low_F}}</td>
+            <td class="tg-549m">0</td>
+            <td class="tg-uj5g">0</td>
+            <td class="tg-i81m"></td>
+          </tr>
+          <tr>
+            <td class="tg-cwv5">Score:</td>
+            {% if Role_self == 'A' %}<td class="tg-8nce2">{% else %}<td class="tg-8nce">{% endif %}
+            {{session.config.GE_Low_A|add:session.config.GE_Low_F|addition:40|mul:session.config.mpcr|addition:20|sub:session.config.GE_Low_A}}</td>
+            {% if Role_self == 'F' %}<td class="tg-42ua2">{% else %}<td class="tg-42ua">{% endif %}
+            {{session.config.GE_Low_A|add:session.config.GE_Low_F|addition:40|mul:session.config.mpcr|addition:20|sub:session.config.GE_Low_F}}</td>
+            <td class="tg-549m">{{session.config.mpcr|mul:GE}}</td>
+            <td class="tg-uj5g">{{session.config.mpcr|mul:GE}}</td>
+            <td class="tg-i81m"></td>
+            {% endwith %}{% endwith %}{% endwith %}
+          </tr>
+        </table><br><br>
+
 
     <p>
-        {% for field in form %}
-            {% formfield field %}
-        {% endfor %}
+        <label for="id_A_stage1_2"><input type="radio" id="id_A_stage1_2" value="A2" name="A_stage1" required="">
+        A2</label> - means Role F will be asked to increase their Group Exchange contribution in Stage 2.
     </p>
-        
-    <center><img src="/static/img/stage1.png"/ height="300" align="center"></center>
+    </ul>
+
+    <center><img src="/static/img/stage1.png"/ height="300" align="center"></center></p>
 
     {% next_button %}
 

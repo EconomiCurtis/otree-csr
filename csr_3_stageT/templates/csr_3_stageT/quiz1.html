@@ -1,5 +1,6 @@
 {% extends "global/BaseCSR.html" %}
 {% load staticfiles otree_tags %}
+{% load mathfilters %}
 
 {% block title %}
     Quiz 1
@@ -10,8 +11,7 @@
     <p class="text-success">
     </p>
         <div class="panel-heading">
-                <h3>Assume you are assigned to <b>Role A</b>. Assume that you both have an endowment of 60 points, and that your Role F partner contributed 40 points to the Group Exchange last round.</h3>
-                <h3>How many points would <b>Role F</b> contribute to the Group Exchange if you choose <b>A2</b> to the initial allocation and Role F chooses <b>F1</b>?</h3>
+                <h3>Please answer the following questions,</h3>
         </div>
 
         <style type="text/css">
@@ -21,17 +21,17 @@
         </style>
 
         <table class="tg">
+        {% for field in form %}
                 <tr>
                     <th width="50%" style="vertical-align:middle; text-align: right; font-size:100%">
-                      <br> <h3>Role F's Contribution, in points:</h3>
+                      <br> <h3>{{field.label}}:</h3>
                     </th>
-                <th  width="15%" style="vertical-align:bottom;align: center;">
-                     <br> <br>       {% formfield player.quiz_01 with label="" %}  
-                </th>
-                    <th  width="50%" style="vertical-align:bottom; text-align: left">
-                    <br>
+                <th  width="50%" style="vertical-align:middle;align: center;">
+                     <br> <br>       {{field}} 
+                    <font color="red">{{ field.errors }} </font> 
                     </th>
                 </tr>
+                {% endfor %}
             </table>
 
     <p>
@@ -50,7 +50,18 @@
 
             <h4><br>Cheater Mode Activated (Debug Mode Only)</h4>
             <p>
-                The answer is 60. 
+                q1: {{player.GE_Low_F}} <br>
+                q2: {{player.GE_Low_A}} <br>
+                q3: {{session.config.GE_Low_A|add:session.config.GE_Low_F|addition:40|mul:session.config.mpcr|addition:20|sub:session.config.GE_Low_A}} <br>
+                q4: {{session.config.GE_Low_A|add:session.config.GE_Low_F|addition:40|mul:session.config.mpcr|addition:20|sub:session.config.GE_Low_F}} <br>
+
+            {% with F_GE=session.config.GE_Low_F|mul:session.config.F1_F_mult %}
+            {% with GE=session.config.GE_Low_A|add:F_GE|add:40 %}
+            {% with F_IE=20|sub:F_GE%}
+                q5: {{session.config.mpcr|mul:GE|addition:20|sub:session.config.GE_Low_A }} <br>
+                q6: {{session.config.mpcr|mul:GE|addition:F_IE}} <br>
+            {% endwith %}            {% endwith %}            {% endwith %}
+
             </p>
         </div>
     {% endif %}

@@ -1,0 +1,166 @@
+{% extends "global/BaseCSR.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Select your group exchange contribution
+{% endblock %}
+
+{% block content %}
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;border:none;margin:0px auto;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:5px 5px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:5px 5px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;}
+</style>
+    <table class="tg">
+            <tr>
+                <th style="vertical-align:middle;width:60%">
+                    <h3>Investment round  :
+                </th>
+                <th style="vertical-align:middle; text-align: left">
+                    <h3><b>{{vcm_round_number}}</b> of {{ vcm_round_count_total }}       
+                </th>
+            </tr>
+
+
+            <tr>
+                <th style="vertical-align:middle;width:60%">
+                    <h3>Other members in your group received the following::
+                </th>
+                <th style="vertical-align:middle; text-align: left">
+                    <h3>{{ op_scores | join:", " }}</h3>
+                </th>
+            </tr>
+
+            <tr>
+                <th style="vertical-align:middle">
+                    <h3>Other group members' total points available for investing:
+                </th>
+                <th style="vertical-align:middle; text-align: left">
+                    <h3><b>{{ op_scores_sum }} points</b>     
+                </th>
+            </tr>
+
+            <tr>
+                <th style="vertical-align:middle">
+                    <h3>Your points available for investing:
+                </th>
+                <th width="33%" style="vertical-align:middle; text-align: left">
+                    <h3><b>{{ ret_score }} points</b>     
+                </th>
+            </tr>
+
+
+            <tr>
+                <th style="vertical-align:middle; text-align: left">
+                    <h3>Select Group Exchange Percent Contribution:  <br><br>
+                <div class="input-group slider" data-slider="" style="width:350%;">
+                    <input type="range" 
+                    name="group_exchange_percent" 
+                    step="1" min={{session.config.GE_min}} max={{session.config.GE_max}}
+                    id="id_group_exchange_percent" value="None" 
+                    class="form-control"
+                    oninput="sliderChange(this.value);enableNextButton();" 
+                    onclick='enableNextButton();'>
+                    <span class="input-group-addon" data-slider-value="" title="current value"></span>&nbsp;percent
+                </div>
+
+                <th style="vertical-align:top; text-align: left">
+                    <h3><br>Group Exchange
+                        <br>Percent Contribution:
+                        <span name="ge_percent_slider" id="id_ge_percent_slider">...</span>%
+                        {{ form.group_exchange.errors }}
+                </th>
+            </tr>
+
+
+
+           <tr>
+                <th style="vertical-align:middle; text-align: right">
+                    <h3>Your Group Exchange Contribution:
+                </th>
+                <th style="vertical-align:middle; text-align: left">
+                    <h3><span id="id_group_exchange">...</span>
+                </th>
+            </tr>
+
+            <tr>
+                <th style="vertical-align:middle; text-align: right">
+                    <h3>Your Individual Exchange Contribution:
+                </th>
+                <th style="vertical-align:middle; text-align: left">
+                    <h3><span id="id_individual_exchange">...</span>
+                </th>
+            </tr>
+
+            <tr>
+                <th style="vertical-align:middle; text-align: center">
+                    
+                </th>
+                <th style="vertical-align:middle; text-align: left">
+                <h3><font color="gray">Click "Next" when you are ready to confirm your contribution allocation.</font></h3> 
+   
+            </th>
+  
+        </tr>
+
+        </table>
+
+            <h4><!-- {{ form.group_exchange_percent.label }}<br><br> {{form.group_exchange_percent}} -->
+
+
+
+    <div align="right">
+    <input class="btn btn-primary btn-large btn-primary next-button" type="submit" value="Next" id='submit' disabled /><br><br><br>
+      <font color='red'>{{ form.group_exchange_percent.errors }}</font>
+    </div> 
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+
+
+
+
+
+
+<!--   <input id="slider" type="range" min="50" max="100" step="10" oninput="sliderChange(this.value)">
+     * {{ ret_score }}
+ -->
+  
+
+<script>
+    function sliderChange(val) {
+        var GE_contrib = (Number(val) / 100 * {{ ret_score }}).toFixed(2);
+        var IE_contrib = ({{ ret_score }} - GE_contrib).toFixed(2) ;
+
+        document.getElementById('id_ge_percent_slider').innerHTML = val;
+        document.getElementById('id_individual_exchange').innerHTML = IE_contrib;
+        document.getElementById('id_group_exchange').innerHTML = GE_contrib;
+    };
+
+
+
+var rangechanged=false;
+var GE_min = {{session.config.GE_min}};
+var GE_max = {{session.config.GE_max}};
+
+
+function enableNextButton() {
+    document.getElementById("submit").disabled = false;
+    $("<style type='text/css'>input[type=range]::-webkit-slider-thumb{-webkit-appearance: none;background-color: #ecf0f1;border: 1px solid #bdc3c7;width: 15px;height: 15px;border-radius: 18px;cursor: pointer;-webkit-animation: none;animation: none;}</style>").appendTo($("head"));
+    $("<style type='text/css'>input[type=range] {;-webkit-animation:none;animation:none;}</style>").appendTo($("head"));
+    
+
+};
+
+</script>
+
+
+
+
+
+
+
+{% endblock %}
+

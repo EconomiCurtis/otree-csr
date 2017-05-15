@@ -14,6 +14,10 @@ from otree.api import (
     Currency as c, currency_range
 )
 import random
+from math import ceil
+
+
+
 
 # </standard imports>
 
@@ -31,12 +35,17 @@ First implementation by Curtis Kephart (curtiskephart@gmail.com) 2016.11
 class Constants(BaseConstants):
     name_in_url = 'csr_3_stage'
     players_per_group = 2
-    num_rounds = 2
+    num_rounds = 11
     stage_rounds = 1 # moved to stratagey method, one round only
-    automatic_earnings = 120
-    endowment_boost = 60
+    automatic_earnings = 0
+    endowment_boost = 0
     final_score_discounter = 0.25
     instructions_template = 'csr_3_stageT/instruc.html'
+    review_template = 'csr_3_stageT/review.html'
+
+    def round_up(Num, RoundTo):
+    	''' rounds up to nearest... RoundTo '''
+    	return int(ceil(Num / float(RoundTo))) * RoundTo
 
 
 class Subsession(BaseSubsession):
@@ -49,8 +58,19 @@ class Subsession(BaseSubsession):
 		    else:
 		        p.participant.vars['final_score_discounter'] = Constants.final_score_discounter
 
-
-
+		for p in self.get_players():
+			p.mpcr     = self.session.config['mpcr']
+			p.GE_Low_A  = self.session.config['GE_Low_A']
+			p.GE_Low_F  = self.session.config['GE_Low_F']
+			p.boycott_cost =self.session.config['boycott_cost']
+			p.A1_A_mult = self.session.config['A1_A_mult']
+			p.A1_F_mult = self.session.config['A1_F_mult']
+			p.F1_A_mult = self.session.config['F1_A_mult']
+			p.F1_F_mult = self.session.config['F1_F_mult']
+			p.A3_A_mult = self.session.config['A3_A_mult']
+			p.A3_F_mult = self.session.config['A3_F_mult']
+			p.N1_prob   = self.session.config['N1_prob']
+			p.stage_round_count = self.session.config['stage_round_count']
 
 
 class Group(BaseGroup):
@@ -60,12 +80,23 @@ class Group(BaseGroup):
 		A_player = [p for p in self.get_players() if p.participant.vars['Role'] == 'A'][0]
 		F_player = [p for p in self.get_players() if p.participant.vars['Role'] == 'F'][0]
 
-		if A_player.A_stage1 == 'A1':
-			for p in self.get_players():
-				# p.participant.vars['end_this_stage_round'] = True #end this round
-				p.round_payoff = p.participant.vars['final_score'] # set scores
-		elif A_player.A_stage1 == 'A2':  #don't think i want to do anything in this case 
-			pass
+		A_GE = (A_player.participant.vars['overall_ge_percent'] * A_player.participant.vars['ret_score']) 
+		A_Endow = A_player.participant.vars['ret_score'] + Constants.endowment_boost
+		F_GE = (F_player.participant.vars['overall_ge_percent'] * F_player.participant.vars['ret_score']) 
+		F_Endow = F_player.participant.vars['ret_score'] + Constants.endowment_boost
+
+		# for p in self.get_players():
+		# 	# p.participant.vars['end_this_stage_round'] = True #end this round
+		# 	if p.participant.vars['Role'] == 'A':
+		# 		A_GE = (p.participant.vars['overall_ge_percent'] * p.participant.vars['ret_score']) 
+		# 		A_Endow = p.participant.vars['ret_score'] + Constants.endowment_boost
+		# 	elif p.participant.vars['Role'] == 'F':
+		# 		F_GE = (p.participant.vars['overall_ge_percent'] * p.participant.vars['ret_score']) 
+		# 		F_Endow = p.participant.vars['ret_score'] + Constants.endowment_boost
+
+		for p in self.get_players():
+			p.set_payoff() # set scores # set scores
+
 
 
 	def F1F2_update(self):
@@ -73,7 +104,7 @@ class Group(BaseGroup):
 		A_player = [p for p in self.get_players() if p.participant.vars['Role'] == 'A'][0]
 		F_player = [p for p in self.get_players() if p.participant.vars['Role'] == 'F'][0]
 
-		if F_player.F_stage2 == 'F1': #F2 means pass to A to make decision A3/A4
+		if F_player.terminal_choice == 'F1': #F2 means pass to A to make decision A3/A4
 			for p in self.get_players():
 				# p.participant.vars['end_this_stage_round'] = True #end this round
 				if p.participant.vars['Role'] == 'A':
@@ -82,9 +113,9 @@ class Group(BaseGroup):
 				elif p.participant.vars['Role'] == 'F':
 					F_GE = 1.5 * (p.participant.vars['overall_ge_percent'] * p.participant.vars['ret_score']) 
 					F_Endow = p.participant.vars['ret_score'] + Constants.endowment_boost
-			p.set_payoff(A_GE, A_Endow, F_GE, F_Endow) # set scores
+			p.set_payoff() # set scores
 
-		elif F_player.F_stage2 == 'F2': #don't think i want to do anything in this case 
+		elif F_player.terminal_choice == 'F2': #don't think i want to do anything in this case 
 			pass
 		else:
 			pass
@@ -96,11 +127,20 @@ class Group(BaseGroup):
 
 		#A4 means pass to Nature
 		# A3 "If the Role A participant chooses A3, both participants again receive the amount they earned during Part 2."
-		if A_player.A_stage3 == 'A3': 
+		if A_player.terminal_choice == 'A3': 
 			for p in self.get_players():
 				# p.participant.vars['end_this_stage_round'] = True #end this round
-				p.round_payoff = p.participant.vars['final_score']
-		elif A_player.A_stage3 == 'A4':  #A4
+				if p.participant.vars['Role'] == 'A':
+					A_GE = (p.participant.vars['overall_ge_percent'] * p.participant.vars['ret_score']) 
+					A_Endow = p.participant.vars['ret_score'] + Constants.endowment_boost
+				elif p.participant.vars['Role'] == 'F':
+					F_GE = (p.participant.vars['overall_ge_percent'] * p.participant.vars['ret_score']) 
+					F_Endow = p.participant.vars['ret_score'] + Constants.endowment_boost
+
+			for p in self.get_players():
+				p.set_payoff() # set scores # set scores
+
+		elif A_player.terminal_choice == 'A4':  #A4
 			pass
 
 
@@ -117,7 +157,7 @@ class Group(BaseGroup):
 		A_player = [p for p in self.get_players() if p.participant.vars['Role'] == 'A'][0]
 		F_player = [p for p in self.get_players() if p.participant.vars['Role'] == 'F'][0]
 
-		if F_player.Nature == 'N1':
+		if F_player.terminal_choice == 'N1':
 			for p in self.get_players():
 				if p.participant.vars['Role'] == 'A':
 					A_GE = 2 * (p.participant.vars['overall_ge_percent'] * p.participant.vars['ret_score'])
@@ -126,8 +166,8 @@ class Group(BaseGroup):
 					F_GE = 1.5 * (p.participant.vars['ret_score'] * p.participant.vars['overall_ge_percent']) 
 					F_Endow = p.participant.vars['ret_score'] + Constants.endowment_boost
 			for p in self.get_players():
-				p.set_payoff(A_GE, A_Endow, F_GE, F_Endow) # set scores
-		elif F_player.Nature == 'N2':
+				p.set_payoff() # set scores
+		elif F_player.terminal_choice == 'N2':
 			for p in self.get_players():
 				if p.participant.vars['Role'] == 'A':
 					A_GE = 2 * (p.participant.vars['overall_ge_percent'] * p.participant.vars['ret_score'])
@@ -136,34 +176,85 @@ class Group(BaseGroup):
 					F_GE = (p.participant.vars['overall_ge_percent'] * p.participant.vars['ret_score'])
 					F_Endow = p.participant.vars['ret_score'] + Constants.endowment_boost
 			for p in self.get_players():
-				p.set_payoff(A_GE, A_Endow, F_GE, F_Endow) # set scores
-
+				p.set_payoff() # set scores
 
 
 
 
 class Player(BasePlayer):
 
-	quiz_01 = models.PositiveIntegerField(
-	    verbose_name='Your earnings:',
-	    min = 0,
-	    max = 999,
-	    initial=None,
-	    doc='quiz answer')
-	  
-	quiz_02 = models.PositiveIntegerField(
-	    verbose_name='Your earnings:',
-	    min = 0,
-	    max = 999,
-	    initial=None,
-	    doc='quiz answer')
+	player_role=models.CharField(doc="player role, A or F")
 
-	quiz_03 = models.PositiveIntegerField(
-	    verbose_name='Your earnings:',
+
+	quiz_01_a = models.FloatField(
+	    verbose_name="In A1, Role F's Group Exchange Contribution",
 	    min = 0,
 	    max = 999,
 	    initial=None,
-	    doc='quiz answer')
+	    doc='''quiz_01_a answer In A1, Role F's Group Exchange Contribution''')
+	quiz_01_b = models.FloatField(
+	    verbose_name="In A1, Role A's Group Exchange Contribution",
+	    min = 0,
+	    max = 999,
+	    initial=None,
+	    doc='''quiz_01_b answer In A1, Role A's Group Exchange Contribution''')
+	quiz_01_c = models.FloatField(
+	    verbose_name="In A1, Role A's Score",
+	    min = 0,
+	    max = 999,
+	    initial=None,
+	    doc='''quiz_01_c answer In A1, Role A's Score''')
+	quiz_01_d = models.FloatField(
+	    verbose_name="In A1, Role F's Score",
+	    min = 0,
+	    max = 999,
+	    initial=None,
+	    doc='''quiz_01_d answer In A1, Role F's Score''')
+	quiz_01_e = models.FloatField(
+	    verbose_name="In F1, Role A's Score",
+	    min = 0,
+	    max = 999,
+	    initial=None,
+	    doc='''quiz_01_c answer In F1, Role A's Score''')
+	quiz_01_f = models.FloatField(
+	    verbose_name="In F1, Role F's Score",
+	    min = 0,
+	    max = 999,
+	    initial=None,
+	    doc='''quiz_01_d answer In F1, Role F's Score''')
+	  
+
+
+	quiz_02_a = models.FloatField(
+	    verbose_name="In N1, Role A's Score",
+	    min = 0,
+	    max = 999,
+	    initial=None,
+	    doc='''quiz_02_a answer In N1, Role A's Score''')
+	quiz_02_b = models.FloatField(
+	    verbose_name="In N1, Role F's Score",
+	    min = 0,
+	    max = 999,
+	    initial=None,
+	    doc='''quiz_02_b answer In N1, Role F's Score''')
+	quiz_02_c = models.FloatField(
+	    verbose_name="In N2, Role A's Score",
+	    min = 0,
+	    max = 999,
+	    initial=None,
+	    doc='''quiz_02_c answer In N2, Role A's Score''')
+	quiz_02_d = models.FloatField(
+	    verbose_name="In N2, Role F's Score",
+	    min = 0,
+	    max = 999,
+	    initial=None,
+	    doc='''quiz_02_d answer In N2, Role F's Score''')
+	quiz_02_e = models.FloatField(
+	    verbose_name="The Probability of N1 Occurring",
+	    min = 0,
+	    max = 999,
+	    initial=None,
+	    doc='''quiz_02_e answer The Probability of N1 Occurring''')
 
 
 
@@ -171,42 +262,97 @@ class Player(BasePlayer):
 	ret_score = models.IntegerField(
 		doc="player's real effort task score - correct number of RETs mapped to a number.")
 
-	vcm_score = models.IntegerField(
+	vcm_score = models.FloatField(
 		doc="score player received in vcm round.")
 
-	vcm_ge_percent = models.IntegerField(
+	vcm_ge_percent = models.FloatField(
 		doc="player's average group exchange contribution in vcm rounds")
 
 
+	op_ge_overallavg = models.CharField(
+	    doc = 'this subjects opposing player overall average group contribution from vcm.')
+
+	round_base_points = models.FloatField(
+		doc = ''' player's base score. if no adjustments are made to own or counterpart GE contributions, player will earn this ''')
 
 
 
-	role=models.CharField(doc="player role, A or F")
-
-	def set_payoff(self, A_GE, A_Endow, F_GE, F_Endow):
+	def set_payoff(self):
 		"""calc player payoffs"""
+		''' called inside group functions, eg A1A2_update '''
 
 		for p in self.group.get_players():
-			if p.participant.vars['Role'] == 'F':
-				total_op_individual_exchange = A_Endow - A_GE
-				total_op_group_exchange = A_GE
 
-				p.round_payoff = (F_Endow - F_GE) - (1/2 * total_op_individual_exchange) + (1/2 * F_GE) + Constants.automatic_earnings
+			# group exchange
+			F_GE = (p.GE_Low_F)
+			if ((p.terminal_choice == 'F1') | (p.terminal_choice == 'N1')):
+				F_GE = (p.GE_Low_F * p.F1_F_mult)
+			GE = p.GE_Low_A + F_GE + 40
 
-			elif p.participant.vars['Role'] == 'A':
-				total_op_individual_exchange = F_Endow - F_GE
-				total_op_group_exchange = F_GE
+			#scores
+			A_score = (GE * p.mpcr) + (20 - p.GE_Low_A)
+			F_score = (GE * p.mpcr) + (20 - F_GE)
 
-				p.round_payoff = (A_Endow - A_GE) - (1/2 * total_op_individual_exchange) + (1/2 * A_GE) + Constants.automatic_earnings
+			if ((p.terminal_choice == 'N2') | (p.terminal_choice == 'N1')):
+				A_score = (GE * p.mpcr) + (20 - p.GE_Low_A) - p.boycott_cost
+
+			if (p.participant.vars['Role'] == 'A'):
+				p.postStage_self_individual_exchange = 20 - p.GE_Low_A
+				p.postStage_self_ge = p.GE_Low_A
+				p.postStage_op_individual_exchange = str(20 - F_GE)
+				p.postStage_op_group_exchange = str(F_GE)
+				p.round_payoff = A_score
+				p.postStage_round_points = p.round_payoff
+
+			elif (p.participant.vars['Role'] == 'F'):
+				p.postStage_self_individual_exchange = F_GE
+				p.postStage_self_ge = p.GE_Low_F
+				p.postStage_op_individual_exchange = str(20 - p.GE_Low_A)
+				p.postStage_op_group_exchange = str(p.GE_Low_A)
+				p.round_payoff = F_score
+				p.postStage_round_points = p.round_payoff
 
 
-	# # from vcm game
-	# def set_payoffs(self):
-	# 	"""calc player payoffs"""
-	# 	self.total_op_individual_exchange = sum([p.individual_exchange for p in self.get_others_in_group()])
-	# 	self.total_op_group_exchange = sum([p.group_exchange for p in self.get_others_in_group()])
 
-	# 	self.round_points = self.individual_exchange - (1/2) * self.total_op_individual_exchange + (1/2) * self.group_exchange + Constants.automatic_earnings
+
+	stage_round_count = models.PositiveIntegerField(
+		doc='The stage round number.'
+		)
+
+	round_payoff=models.FloatField(
+		doc="this player's earnings this round")
+
+	GE_Low_A = models.FloatField(
+		doc="player A's group exchange contribution at 1X")
+	GE_Low_F = models.FloatField(
+		doc="player F's group exchange contribution at 1X")
+
+	mpcr = models.FloatField(
+		doc="marginal per-capita rate of return to vcm game")
+
+	boycott_cost = models.FloatField(
+		doc="cost of boycoff to player A")
+	passive_ge_contrib = models.FloatField(
+		doc="passive players' total contribution to group exchange")
+
+	A1_A_mult = models.FloatField(
+		doc="multiplier on GE of A at node A1")
+	A1_F_mult = models.FloatField(
+		doc="multiplier on GE of F at node A1")
+
+	F1_A_mult = models.FloatField(
+		doc="multiplier on GE of A at node F1")
+	F1_F_mult = models.FloatField(
+		doc="multiplier on GE of F at node F1")
+
+	A3_A_mult = models.FloatField(
+		doc="multiplier on GE of A at node A3")
+	A3_F_mult = models.FloatField(
+		doc="multiplier on GE of F at node A3")
+
+	N1_prob = models.FloatField(
+		doc="Probability of N1, where prob of N2 is (1 - N1_prob)")
+
 
 
 
@@ -238,10 +384,10 @@ class Player(BasePlayer):
 		doc="""'Should nature move, this is nature's move""",
 		widget=widgets.RadioSelect())
 
+
 	terminal_choice = models.CharField(
 		doc="""'the terminal node reached by A and F""",
 		widget=widgets.RadioSelect())
-
 
 	def set_terminal_node(self):
 		"""explicitly define terminal node reached by A and F in this group"""
@@ -249,6 +395,7 @@ class Player(BasePlayer):
 		F_tn = None
 		N_tn = None #nature
 		for p in self.group.get_players():
+			p.player_role = p.participant.vars['Role']
 			if p.participant.vars['Role'] == 'A':
 				if p.A_stage1 == "A1": A_tn = "A1"
 				elif p.A_stage3 == "A3": A_tn = "A3"
@@ -268,5 +415,21 @@ class Player(BasePlayer):
 
 		for p in self.group.get_players():
 			p.terminal_choice = TN
+
+
+	postStage_self_individual_exchange = models.FloatField(
+		doc='''"player's individual exchange contribution after stage game"''')
+
+	postStage_self_ge = models.FloatField(
+		doc='''"player's group exchange contribution after stage game"''')
+
+	postStage_op_individual_exchange = models.CharField(
+		doc='''"player's three other countryparty player's individual after stage game"''')
+
+	postStage_op_group_exchange = models.CharField(
+		doc='''"player's three other countryparty player's group exchange after stage game"''')
+
+	postStage_round_points = models.FloatField(
+		doc='''"player's final score from stage game"''')
 
 

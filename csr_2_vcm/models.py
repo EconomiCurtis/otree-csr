@@ -44,17 +44,23 @@ class Subsession(BaseSubsession):
 	def before_session_starts(self):
 		# how long is the real effort task time?
 		# refer to settings.py settings.
+		cnt = 1
 		for p in self.get_players():
-		    if 'vcm_round_count' in self.session.config:
-		        p.participant.vars['vcm_round_count'] = self.session.config['vcm_round_count']
-		        vcm_round_count = self.session.config['vcm_round_count']
-		    else:
-		    	p.participant.vars['vcm_round_count'] = Constants.vcm_rounds
-		    	vcm_round_count = self.session.config['vcm_round_count']
+
+			p.participant.vars['id_in_subsession'] = cnt
+			cnt = cnt + 1
+
+			if 'vcm_round_count' in self.session.config:
+			    p.participant.vars['vcm_round_count'] = self.session.config['vcm_round_count']
+			    vcm_round_count = self.session.config['vcm_round_count']
+			else:
+				p.participant.vars['vcm_round_count'] = Constants.vcm_rounds
+				vcm_round_count = self.session.config['vcm_round_count']
 
 		paid_round = random.randint(1,vcm_round_count) #pick paid round
 		for p in self.get_players():
 			p.participant.vars['paid_round'] = paid_round
+			p.mpcr = self.session.config['mpcr']
 
 
 		self.group_randomly()
@@ -64,6 +70,7 @@ class Subsession(BaseSubsession):
 
 class Group(BaseGroup):
 	pass
+
 
 class Player(BasePlayer):
 
@@ -82,7 +89,7 @@ class Player(BasePlayer):
 		doc="Group exchange contribution in this round")
 
 	group_exchange_percent = models.FloatField(
-		min = 5, max = 50,
+		min = 1, max = 100,
 		blank=True, #not required
 		doc="in this round, this subject's percent contribution to group exchange relative to total amount availale to user",
 		widget=widgets.SliderInput(
@@ -96,6 +103,10 @@ class Player(BasePlayer):
 	total_op_group_exchange = models.FloatField(
 		doc='total group_exchange contributions of opposing players'
 		)
+
+	mpcr = models.FloatField(
+		doc="marginal per-capita rate of return to vcm game")
+	
 	round_points = models.FloatField(
 		doc='Points earned this round from the VCM'
 		)
@@ -114,8 +125,8 @@ class Player(BasePlayer):
 	final_score = models.FloatField(
 		doc="this palyer's final score in this round")
 
-	final_ge = models.PositiveIntegerField(
-		doc="this player's final group exchange contribution in the randomly chosen round")
+	final_avg_ge = models.FloatField(
+		doc="this player's final average group exchange contribution over all rounds")
 
 
 
@@ -125,7 +136,7 @@ class Player(BasePlayer):
 		self.total_op_individual_exchange = sum([p.individual_exchange for p in self.get_others_in_group()])
 		self.total_op_group_exchange = sum([p.group_exchange for p in self.get_others_in_group()])
 
-		self.round_points = self.individual_exchange + (0 * self.total_op_individual_exchange) + ((1/2) * self.total_op_group_exchange) + ((1/2) * self.group_exchange)
+		self.round_points = self.individual_exchange + (0 * self.total_op_individual_exchange) + (self.mpcr * self.total_op_group_exchange) + (self.mpcr * self.group_exchange)
 
 
 
@@ -134,13 +145,17 @@ class Player(BasePlayer):
 	def set_roles(self, overall_ge_percent_list):
 		"""set player roles"""
 
-		own_id_index = self.id_in_group - 1
+		own_id_index = self.participant.vars['id_in_subsession'] - 1
 
-		# rank 1 and 2 are smallest ge%
-		# rank 3 and 4 are biggest ge contributers (check out scipy.stats `rankdata` for details)
-		if (np.where(rankdata(np.array(overall_ge_percent_list), method='ordinal') == 4)[0]==own_id_index):
-		    self.player_role = self.participant.vars['Role'] = "A"
-		elif (np.where(rankdata(np.array(overall_ge_percent_list), method='ordinal') == 3)[0]==own_id_index):
+		# rank players (globally) by group exchange contribution
+		self.participant.vars['GE_Rank_list'] = ((rankdata(np.array(overall_ge_percent_list), method='ordinal'))).tolist()
+		self.participant.vars['GE_Rank'] = ((rankdata(np.array(overall_ge_percent_list), method='ordinal'))).tolist()[own_id_index]
+
+		# type cutoff rank
+		cufoff_F = max(p.participant.vars['id_in_subsession'] for p in self.subsession.get_players() if p.group_exchange_percent != None) / 2
+
+		# details...
+		if (self.participant.vars['GE_Rank'] > cufoff_F):
 		    self.player_role = self.participant.vars['Role'] = "A"
 		else:
 		    self.player_role = self.participant.vars['Role'] = "F"
@@ -148,9 +163,7 @@ class Player(BasePlayer):
 		# set player_role_list, a log of each player's role
 		player_role_list = []
 		for id_ in range(0,len(overall_ge_percent_list)):
-			if (np.where(rankdata(np.array(overall_ge_percent_list), method='ordinal') == 4)[0]==id_):
-			    player_role_list.append("A")
-			elif (np.where(rankdata(np.array(overall_ge_percent_list), method='ordinal') == 3)[0]==id_):
+			if (rankdata(np.array(overall_ge_percent_list), method='ordinal').tolist()[id_] > cufoff_F):
 			    player_role_list.append("A")
 			else:
 			    player_role_list.append("F")
@@ -160,5 +173,5 @@ class Player(BasePlayer):
 		#this is the key var passed to stage game.
 		self.participant.vars['player_role_list'] = player_role_list #used to get roles in stage game.
 		self.participant.vars['overall_ge_percent_list'] = overall_ge_percent_list
-		self.participant.vars['overall_ge_percent'] = overall_ge_percent_list[own_id_index]
+		self.final_avg_ge = self.participant.vars['overall_ge_percent'] = overall_ge_percent_list[own_id_index]
 		self.participant.vars['overall_own_ge'] = overall_ge_percent_list[own_id_index] * self.participant.vars["ret_score"]

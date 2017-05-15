@@ -1,5 +1,6 @@
 {% extends "global/BaseCSR.html" %}
 {% load staticfiles otree_tags %}
+{% load mathfilters %}
 
 {% block title %}
     Results
@@ -10,30 +11,23 @@
     </p> -->
 
     <p>
-        You are Role {{ Role_partic_var }}.
-    </p>
-    <p>
-        In Part 1 you earned {{self_ret_score}}. In Part 2 you contributed on average {{ self_overall_ge_percent|floatformat:"0" }}%, or {{self_ge|floatformat:"1"}} points.
+        You are <strong>{% if participant.vars.Role == "A" %}<font color='red'>Role A</font>{% else %}<font color='blue'>Role F</font>{% endif %}</strong>.
+        In Part 1 you earned {{revwPg_self_ret_score}}. In Part 2 you contributed on average {{ participant.vars.overall_ge_percent|mul:100|floatformat:"0" }}%.
     </p>
 
     <p>
-        Your counterpart is Role {{ counter_party_role }}.
-    </p>
-    <p>
-        In Part 1 that person earned {{countery_party_ret_score}}.  In Part 2 they contributed on average {{ counter_party_overall_ge_percent|floatformat:"0" }}%, or {{counter_party_ge|floatformat:"1"}} points.
+        Your counterpart is Role <strong>{% if participant.vars.Role == "A" %}<font color='blue'>Role F</font>{% else %}<font color='red'>Role A</font>{% endif %}</strong>.
+        In Part 1 that person earned {{revwPg_counter_party_ret_score}} points.  In Part 2 they contributed on average {{ revwPg_counter_ge_percent|mul:100|floatformat:"0" }}%.
     </p>
 
 
     <p>
-        The other two players contributed {{ges_percent_extra_2p.0|floatformat:"0" }}% and {{ges_percent_extra_2p.1|floatformat:"0" }}%, or {{ges_extra_2p.0|floatformat:"2" }} points and {{ges_extra_2p.1|floatformat:"2" }} points respectively. 
+        There are two other members of your group. You will not know about their group exchange contribution or earnings in previous rounds, but your decisions will affect their score as passive players. Additionally, you will be matched up with a group as a passive player, and the active players' decisions in those rounds will affect your score as a passive player. 
     </p>
-
 
     <p>
-        If all group exchange contributions remain unchanged you will earn the following, 
+        Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a>
     </p>
-
-
 
     <p>
         {% for field in form %}
@@ -41,14 +35,7 @@
         {% endfor %}
     </p>
 
-    {% next_button %}
-
-    <p>
-        <br><br>
-        Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a>
-    </p>
-
-
+    {% next_button %}<br><br>
 
 
  <div id='instrucs' style="display:none">{% include Constants.instructions_template %}</div>

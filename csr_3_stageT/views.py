@@ -6,46 +6,42 @@ from django.conf import settings
 import time
 import numpy
 import decimal
+import json
+from math import ceil
+
+def round_up(Num, RoundTo):
+    ''' rounds up to nearest... RoundTo '''
+    return int(ceil(Num / float(RoundTo))) * RoundTo
 
 
 class InitWaitPage(WaitPage):
     #this page is regrouping based on Role
-    
+     
     wait_for_all_groups = True
-
+ 
     def is_displayed(self):
         return (self.round_number == 1)
-
+ 
     def after_all_players_arrive(self):
         # executed only once for the entire group.
- 
+  
         self.participant.vars['stage_round'] = 1 #just setup stage_round counter. I do this after too. 
-
-        # player_role_list = self.session.vars["player_role_list"]
-        # final_scores = self.session.vars["final_scores"] 
-        # final_ges = self.session.vars["final_ges"]
-        # ret_scores = self.session.vars["ret_scores"]
-        # overall_ge_percent = self.session.vars['overall_ge_percent_list']
-
-        #         # collect subject data from previous parts of experimetn. 
-        # cnt = 0
-        # for p in self.subsession.get_players():
-        #     p.participant.vars['Role'] = player_role_list[cnt]
-        #     p.role = player_role_list[cnt]
-        #     p.participant.vars['final_score'] = final_scores[cnt] #final score from vcm round
-        #     p.participant.vars['final_ge'] = final_ges[cnt] # the GE from the randomly selected round. 
-        #     p.participant.vars["ret_score"] = ret_scores[cnt] # ret score
-        #     p.participant.vars["overall_ge_percent"] = overall_ge_percent[cnt] # ret scoreoverall_ge_percent
-        #     cnt += 1
-
-
+ 
+        # also done in next page!!
         players = self.subsession.get_players()
-
-        A_players = [p for p in players if p.participant.vars['Role'] == 'A']
-        F_players = [p for p in players if p.participant.vars['Role'] == 'F']
-
+ 
+        A_players = sorted(
+                [p for p in players if p.participant.vars['Role'] == 'A'],
+                key=lambda p: p.participant.vars['overall_ge_percent']
+            )
+        F_players = sorted(
+                [p for p in players if p.participant.vars['Role'] == 'F'],
+                key=lambda p: p.participant.vars['overall_ge_percent'],
+                reverse=True
+            )
+ 
         group_matrix = []
-
+ 
         # pop elements from A_players until it's empty
         while A_players:
             new_group = [
@@ -53,72 +49,46 @@ class InitWaitPage(WaitPage):
               F_players.pop(),
             ]
             group_matrix.append(new_group)
-
+ 
         self.subsession.set_group_matrix(group_matrix)
-
+ 
         for subsession in self.subsession.in_rounds(2, Constants.num_rounds):
             subsession.group_like_round(1)
 
 
 
 class Instructions(Page):
-
-
+ 
+ 
     def is_displayed(self):
         return self.round_number == 1
-
+ 
     def vars_for_template(self):
 
+        for p in self.group.get_players():
+            p.vcm_ge_percent = p.participant.vars['overall_ge_percent']
+            p.player_role = p.participant.vars['Role'] 
+            p.ret_score = p.participant.vars["ret_score"]
+ 
         self.participant.vars['stage_round'] = 1
         self.participant.vars['end_this_stage_round'] = False
-
+ 
 ##############################################################
-
-        # player_role_list = self.session.vars["player_role_list"]
-        # final_scores = self.session.vars["final_scores"] 
-        # final_ges = self.session.vars["final_ges"]
-        # ret_scores = self.session.vars["ret_scores"]
-        # overall_ge_percent = self.session.vars['overall_ge_percent_list']
-
-        # # collect subject data from previous parts of experimetn. 
-        # cnt = 0
-        # for p in self.subsession.get_players():
-        #     p.participant.vars['Role'] = player_role_list[cnt]
-        #     p.role = p.participant.vars['Role']
-        #     p.participant.vars['final_score'] = final_scores[cnt] #final score from vcm round
-        #     p.participant.vars['final_ge'] = final_ges[cnt] # the GE from the randomly selected round. 
-        #     p.participant.vars["ret_score"] = ret_scores[cnt] # ret score
-        #     p.participant.vars["overall_ge_percent"] = overall_ge_percent[cnt] # ret scoreoverall_ge_percent
-        #     cnt += 1
-
+ 
         for p in self.subsession.get_players():
             p.role = p.participant.vars['Role']
-
+ 
         ##############################################################
-
+ 
         # set previous rounds data into experiment output file
         self.player.ret_score = self.participant.vars["ret_score"]
         self.player.vcm_score = self.participant.vars["final_score"]
         self.player.vcm_ge_percent = self.participant.vars["overall_ge_percent"]
-
-
+ 
+        # get subject teams, use same method as in wait screen
+        group_matrix = self.subsession.get_group_matrix()
         players = self.subsession.get_players()
-
-        A_players = [p for p in players if p.participant.vars['Role'] == 'A']
-        F_players = [p for p in players if p.participant.vars['Role'] == 'F']
-
-        group_matrix = []
-
-        # pop elements from A_players until it's empty
-        while A_players:
-            new_group = [
-              A_players.pop(),
-              F_players.pop(),
-            ]
-            group_matrix.append(new_group)
-
-
-
+ 
         return {
             'player_role_list':self.participant.vars["player_role_list"],
             'stage_round':self.participant.vars['stage_round'],
@@ -128,35 +98,43 @@ class Instructions(Page):
             'counter_party_role':self.player.get_others_in_group()[0].participant.vars['Role'],    
             'counter_party_score':self.player.get_others_in_group()[0].participant.vars['final_score'], 
             'countery_party_ret_score':self.player.get_others_in_group()[0].participant.vars['ret_score'], 
-            'counter_party_ge':self.player.get_others_in_group()[0].participant.vars['final_ge'],  
             'counter_party_overall_ge_percent':round(self.player.get_others_in_group()[0].participant.vars['overall_ge_percent'],2),   
             'self_ret_score':self.participant.vars["ret_score"], 
             'self_score':self.participant.vars['final_score'],
-            'self_ge':self.participant.vars['final_ge'],
             'self_overall_ge_percent':self.participant.vars['overall_ge_percent'],
             'overall_ge_percent_list':self.participant.vars['overall_ge_percent_list'],
             'own_ge_percent':self.participant.vars['overall_ge_percent_list'][self.player.id_in_group - 1],
             'ret_scores':self.participant.vars["ret_scores"],
             'role':self.participant.vars['Role'],
             'final_scores':self.participant.vars['final_scores'],
-            'final_ges':self.participant.vars['final_ges'],
             'ret_scores':self.participant.vars["ret_scores"],
             'overall_ge_percent_list':self.participant.vars['overall_ge_percent_list'],
             'group_matrix':group_matrix,
             'allplayers':group_matrix,
-
+ 
             'debug': settings.DEBUG,
+ 
+            'z_A_players_sorted_asc':sorted(
+                [p for p in players if p.participant.vars['Role'] == 'A'],
+                key=lambda player: player.participant.vars['overall_ge_percent']
+            ),
+            'z_F_players_sorted_desc':sorted(
+                [p for p in players if p.participant.vars['Role'] == 'F'],
+                key=lambda player: player.participant.vars['overall_ge_percent'],
+                reverse=True
+            ),
+            'z_A_players':[p for p in players if p.participant.vars['Role'] == 'A'],
+            'z_F_players':[p for p in players if p.participant.vars['Role'] == 'F'],
+ 
         }
-
+ 
     def before_next_page(self):
         if self.participant.vars["Role"] == 'A':
             self.player.role = 'A'
         elif self.participant.vars["Role"] == 'F':
             self.player.role = 'F'
         else:  self.player.role = "sadf"
-
-
-
+ 
 
 ###############################################################################
 ## Quiz Time ##################################################################
@@ -165,15 +143,44 @@ class Instructions(Page):
 class quiz1(Page):
 
     form_model = models.Player
-    form_fields = ['quiz_01']
+    form_fields = ['quiz_01_a','quiz_01_b','quiz_01_c','quiz_01_d','quiz_01_e','quiz_01_f']
 
     def is_displayed(self):
         return self.round_number == 1
 
-    def quiz_01_error_message(self, value):
-        if (value != 60):
-            return 'Incorrect'
+    # see questions at quiz_01_a in models.py
+    def quiz_01_a_error_message(self, value):
+        if (value != self.player.GE_Low_F):
+            return 'Incorrect. Feel free to raise your hand to ask for help. '
 
+    def quiz_01_b_error_message(self, value):
+        if (value != self.player.GE_Low_A):
+            return 'Incorrect. Feel free to raise your hand to ask for help. '
+
+    def quiz_01_c_error_message(self, value):
+        result = (self.player.GE_Low_A + self.player.GE_Low_F + 40) * self.player.mpcr + (20 - self.player.GE_Low_A)
+        if (value != result):
+            return 'Incorrect. Feel free to raise your hand to ask for help. '
+
+    def quiz_01_d_error_message(self, value):
+        result = (self.player.GE_Low_A + self.player.GE_Low_F + 40) * self.player.mpcr + (20 - self.player.GE_Low_F)
+        if (value != result):
+            return 'Incorrect. Feel free to raise your hand to ask for help. '
+
+    def quiz_01_e_error_message(self, value):
+        F_GE = self.player.GE_Low_F * self.player.F1_F_mult
+        GE   = self.player.GE_Low_A + F_GE + 40
+        result = (GE) * self.player.mpcr + (20 - self.player.GE_Low_A)
+        if (value != result):
+            return 'Incorrect. Feel free to raise your hand to ask for help. '
+
+    def quiz_01_f_error_message(self, value):
+        F_GE = self.player.GE_Low_F * self.player.F1_F_mult
+        GE   = self.player.GE_Low_A + F_GE + 40
+        F_IE = 20 - F_GE
+        result = (GE) * self.player.mpcr + F_IE
+        if (value != result):
+            return 'Incorrect. Feel free to raise your hand to ask for help. '
 
     def vars_for_template(self):
         return {
@@ -188,18 +195,54 @@ class quiz1_sol(Page):
         return self.round_number == 1
 
 
-####################### Quiz 3 #########################################
+####################### Quiz 2 #########################################
 class quiz2(Page):
 
     form_model = models.Player
-    form_fields = ['quiz_02']
+    form_fields = ['quiz_02_a','quiz_02_b','quiz_02_c','quiz_02_d','quiz_02_e']
 
     def is_displayed(self):
         return self.round_number == 1
 
-    def quiz_02_error_message(self, value):
-        if (value != 40):
-            return 'Incorrect'
+    # see questions at quiz_02_a in models.py
+    def quiz_02_a_error_message(self, value):
+        F_GE = self.player.GE_Low_F * self.player.F1_F_mult
+        GE = self.player.GE_Low_A + F_GE + 40
+        F_IE = 20 - F_GE
+        result = (self.player.mpcr * GE) + 20 - self.player.GE_Low_A - self.player.boycott_cost
+        if (value != result):
+            return 'Incorrect. Feel free to raise your hand to ask for help. '
+
+    def quiz_02_b_error_message(self, value):
+        F_GE = self.player.GE_Low_F * self.player.F1_F_mult
+        GE = self.player.GE_Low_A + F_GE + 40
+        F_IE = 20 - F_GE
+        result = (self.player.mpcr * GE) + F_IE
+        if (value != result):
+            return 'Incorrect. Feel free to raise your hand to ask for help. ' + str(result)
+
+    def quiz_02_c_error_message(self, value):
+        F_GE = self.player.GE_Low_F
+        GE = self.player.GE_Low_A + F_GE + 40
+        F_IE = 20 -  F_GE
+        result = (self.player.GE_Low_A + self.player.GE_Low_F + 40) * self.player.mpcr + (20 - self.player.GE_Low_A - self.player.boycott_cost)
+        if (value != result):
+            return 'Incorrect. Feel free to raise your hand to ask for help. '
+
+    def quiz_02_d_error_message(self, value):
+        F_GE = self.player.GE_Low_F
+        GE = self.player.GE_Low_A + F_GE + 40
+        F_IE = 20 -  F_GE
+        result = (self.player.GE_Low_A + self.player.GE_Low_F + 40) * self.player.mpcr + F_IE
+        if (value != result):
+            return 'Incorrect. Feel free to raise your hand to ask for help. '
+
+    def quiz_02_e_error_message(self, value):
+        if (value != self.player.N1_prob):
+            return 'Incorrect. Feel free to raise your hand to ask for help. '
+
+
+
 
     def vars_for_template(self):
         return {
@@ -233,68 +276,63 @@ class pregame(Page):
 
     def vars_for_template(self):
 
-        ges_extra_2p = self.participant.vars['final_ges'][:]
-        ges_team_2p = [self.player.get_others_in_group()[0].participant.vars['final_ge'], self.participant.vars['final_ge']]
-        for ges_team_2p_val in ges_team_2p:
-          cnt = 0
-          for ges_extra_2p_val in ges_extra_2p:
-            if ges_extra_2p_val ==  ges_team_2p_val:
-              ges_extra_2p.pop(cnt)
-              cnt=cnt+1
-            else: 
-              cnt=cnt+1
-
         ges_percent_extra_2p = self.participant.vars['overall_ge_percent_list'][:]
+        ret_extra_2p = self.participant.vars['ret_scores'][:]
+        poobar=[1,2,3,4]
         ges_percent_team_2p = [
-            self.participant.vars['overall_ge_percent'], 
-            self.player.get_others_in_group()[0].participant.vars['overall_ge_percent']]
-        for ges_percent_team_2p_val in ges_percent_team_2p:
-          cnt = 0
-          for ges_percent_extra_2p_val in ges_percent_extra_2p:
-            if ges_percent_extra_2p_val ==  ges_percent_team_2p_val:
-              ges_percent_extra_2p.pop(cnt)
-              cnt=cnt+1
-            else: 
-              cnt=cnt+1
+            self.player.get_others_in_group()[0].participant.vars['overall_ge_percent'],   
+            self.participant.vars['overall_ge_percent']
+            ]
 
 
-        
+
+        # be careful with op_individual_exchange, used later for payoffs
+        op_individual_exchange = [self.player.get_others_in_group()[0].participant.vars['ret_score'] - self.player.get_others_in_group()[0].participant.vars['overall_own_ge']]
+        op_group_exchange = [self.player.get_others_in_group()[0].participant.vars['overall_own_ge']]
+
+
+
+        self.participant.vars['individual_exchange_other2p'] = op_individual_exchange[1:3]
+
+
+        round_points = (
+            self.participant.vars["ret_score"] - self.participant.vars['overall_own_ge'] +
+            0.5 * self.participant.vars['overall_own_ge'] - 
+            (sum(op_individual_exchange) * 0.0) +
+            sum(op_group_exchange) * 0.5
+            )  
+
+        # log in data base facts. 
+        self.player.round_base_points = self.participant.vars['round_base_points'] = round_points
+        self.player.op_ge_overallavg = self.participant.vars['op_group_exchange'] = op_group_exchange
+
 
         return {
-        'ges_team_2p':ges_team_2p,
-        'ges_percent_team_2p':ges_percent_team_2p,
-        'ges_percent_extra_2p':[i * 100 for i in ges_percent_extra_2p],
-        'ges_extra_2p':ges_extra_2p,
-        'player_role_list':self.participant.vars["player_role_list"],
-        'stage_round':self.participant.vars['stage_round'],
-        'Role_self':self.player.role,
-        'Role_partic_var':self.participant.vars["Role"],
-        'counter_party_id':self.player.get_others_in_group(),
-        'counter_party_role':self.player.get_others_in_group()[0].participant.vars['Role'],    
-        'counter_party_score':self.player.get_others_in_group()[0].participant.vars['final_score'], 
-        'countery_party_ret_score':self.player.get_others_in_group()[0].participant.vars['ret_score'], 
-        'counter_party_ge':self.player.get_others_in_group()[0].participant.vars['final_ge'],  
-        'counter_party_overall_ge_percent':round(self.player.get_others_in_group()[0].participant.vars['overall_ge_percent'],2)*100,   
-        'self_ret_score':self.participant.vars["ret_score"], 
-        'self_score':self.participant.vars['final_score'],
-        'self_ge':self.participant.vars['final_ge'],
-        'self_overall_ge_percent':self.participant.vars['overall_ge_percent']*100,
-        'overall_ge_percent_list':self.participant.vars['overall_ge_percent_list'],
-        'own_ge_percent':self.participant.vars['overall_ge_percent_list'][self.player.id_in_group - 1],
-        'ret_scores':self.participant.vars["ret_scores"],
-        'role':self.participant.vars['Role'],
-        'final_scores':self.participant.vars['final_scores'],
-        'final_ges':self.participant.vars['final_ges'],
-        'ret_scores':self.participant.vars["ret_scores"],
-        'overall_ge_percent_list':self.participant.vars['overall_ge_percent_list'],
+
+            # own info
+            'revwPg_self_group_id':self.group.get_players(),
+            'revwPg_self_ge_overallavg':self.participant.vars['overall_own_ge'],
+            'revwPg_self_ret_score':self.participant.vars["ret_score"],  
+            'revwPg_self_role':self.participant.vars["Role"],
+            'revwPg_self_ge_percent':self.participant.vars["overall_ge_percent"] ,
+            'revwPg_self_avg_individual_exchange':self.participant.vars["ret_score"] * (1 - self.participant.vars['overall_ge_percent']),
+            'revwPg_self_ge':self.participant.vars['overall_own_ge'],
+            'revwPg_self_group_exchange_score':0.5 * self.participant.vars['overall_own_ge'],
+           
+            # counter part player info
+            'revwPg_counter_party_id':self.player.get_others_in_group(),
+            'revwPg_counter_party_role':self.player.get_others_in_group()[0].participant.vars['Role'],  
+            'revwPg_counter_party_ret_score':self.player.get_others_in_group()[0].participant.vars['ret_score'], 
+            'revwPg_counter_party_ge_overallavg':self.player.get_others_in_group()[0].participant.vars['overall_own_ge'],
+            'revwPg_counter_ge_percent':self.player.get_others_in_group()[0].participant.vars['overall_ge_percent'],
 
 
-        'debug': settings.DEBUG,
-    }
-
+            'debug': settings.DEBUG,
+        }      
 
     def after_all_players_arrive(self):
         pass
+
 
 
 ###############################################################################
@@ -308,26 +346,38 @@ class A_Stage1(Page):
     form_fields = ['A_stage1']
 
     def is_displayed(self):
+
+        if self.round_number == 1:
+            self.player.stage_round_count = 1
+        else:
+            self.player.stage_round_count = self.player.stage_round_count + 1
+
         return (
-            (self.round_number == 1) 
-            & (self.participant.vars['Role'] == 'A') 
-            & (self.participant.vars['stage_round'] <= Constants.stage_rounds))
+            (self.participant.vars['Role'] == 'A') 
+            & (self.player.stage_round_count  <= self.session.config['stage_round_count']))
 
     def vars_for_template(self):
 
+
+
         return {
+
             'stage_round':self.participant.vars['stage_round'],
             'Role_partic_var':self.participant.vars["Role"],
             'counter_party_id':self.player.get_others_in_group(),
             'counter_party_role':self.player.get_others_in_group()[0].participant.vars['Role'],    
             'counter_party_score':self.player.get_others_in_group()[0].participant.vars['final_score'], 
             'countery_party_ret_score':self.player.get_others_in_group()[0].participant.vars['ret_score'], 
-            'counter_party_ge':self.player.get_others_in_group()[0].participant.vars['final_ge'],  
+
             'counter_party_overall_ge_percent':round(self.player.get_others_in_group()[0].participant.vars['overall_ge_percent']*100,2),    
             'self_ret_score':self.participant.vars["ret_score"], 
             'self_score':self.participant.vars['final_score'],
-            'self_ge':self.participant.vars['final_ge'],
+
             'self_overall_ge_percent':round(self.participant.vars['overall_ge_percent']*100, 2),
+        'revwPg_round_points':self.player.participant.vars['round_base_points'],
+        'revwPg_self_ge_overallavg':self.participant.vars['overall_own_ge'],
+        # 'revwPg_counterpart_round_points':self.player.get_others_in_group()[0].participant.vars['round_base_points'],
+
         }
 
 
@@ -336,12 +386,12 @@ class A_Stage1(Page):
 class WaitPage_F1(WaitPage):
 
     def is_displayed(self):
-        return (self.round_number == 1)
+        return (self.player.stage_round_count  <= self.session.config['stage_round_count'])
 
 
     def after_all_players_arrive(self):
         # another wait page, with logic to decide to skip all next rounds. 
-        self.group.A1A2_update()
+        pass
 
 
 ###############################################################################
@@ -353,10 +403,9 @@ class F_Stage2(Page):
     form_fields = ['F_stage2']
 
     def is_displayed(self):
-        return ((self.round_number == 1) 
-            & (self.participant.vars['Role'] == 'F') 
-            & (self.participant.vars['end_this_stage_round'] == False)
-            & (self.participant.vars['stage_round'] <= Constants.stage_rounds))
+        return (
+            (self.participant.vars['Role'] == 'F')
+            & (self.player.stage_round_count  <= self.session.config['stage_round_count']))
 
     def vars_for_template(self):
 
@@ -367,12 +416,16 @@ class F_Stage2(Page):
             'counter_party_role':self.player.get_others_in_group()[0].participant.vars['Role'],    
             'counter_party_score':self.player.get_others_in_group()[0].participant.vars['final_score'], 
             'countery_party_ret_score':self.player.get_others_in_group()[0].participant.vars['ret_score'], 
-            'counter_party_ge':self.player.get_others_in_group()[0].participant.vars['final_ge'],  
+
             'counter_party_overall_ge_percent':round(self.player.get_others_in_group()[0].participant.vars['overall_ge_percent']*100,2),   
             'self_ret_score':self.participant.vars["ret_score"], 
             'self_score':self.participant.vars['final_score'],
-            'self_ge':self.participant.vars['final_ge'],
+
             'self_overall_ge_percent':round(self.participant.vars['overall_ge_percent']*100, 2),
+        'revwPg_round_points':self.player.participant.vars['round_base_points'],
+        'revwPg_self_ge_overallavg':self.participant.vars['overall_own_ge'],
+        'revwPg_counterpart_round_points':self.player.get_others_in_group()[0].participant.vars['round_base_points'],
+
         }
 
 
@@ -381,13 +434,12 @@ class F_Stage2(Page):
 class WaitPage_A1(WaitPage):
 
     def is_displayed(self):
-        return (self.round_number == 1)
+        return ((self.player.stage_round_count  <= self.session.config['stage_round_count']))
 
 
     def after_all_players_arrive(self):
         # another wait page, with logic to decide to skip all next rounds. 
-        self.group.F1F2_update()
-
+        pass
 
 
 
@@ -402,10 +454,9 @@ class A_Stage3(Page):
     form_fields = ['A_stage3']
 
     def is_displayed(self):
-        return ((self.round_number == 1) 
-            & (self.participant.vars['Role'] == 'A') 
-            & (self.participant.vars['end_this_stage_round'] == False)
-            & (self.participant.vars['stage_round'] <= Constants.stage_rounds))
+        return (
+            (self.participant.vars['Role'] == 'A') 
+            & (self.player.stage_round_count  <= self.session.config['stage_round_count']))
 
     def vars_for_template(self):
 
@@ -415,13 +466,15 @@ class A_Stage3(Page):
         'counter_party_id':self.player.get_others_in_group(),
         'counter_party_role':self.player.get_others_in_group()[0].participant.vars['Role'],    
         'counter_party_score':self.player.get_others_in_group()[0].participant.vars['final_score'], 
-        'countery_party_ret_score':self.player.get_others_in_group()[0].participant.vars['ret_score'], 
-        'counter_party_ge':self.player.get_others_in_group()[0].participant.vars['final_ge'],  
+        'countery_party_ret_score':self.player.get_others_in_group()[0].participant.vars['ret_score'],  
             'counter_party_overall_ge_percent':round(self.player.get_others_in_group()[0].participant.vars['overall_ge_percent']*100,2),    
         'self_ret_score':self.participant.vars["ret_score"], 
         'self_score':self.participant.vars['final_score'],
-        'self_ge':self.participant.vars['final_ge'],
         'self_overall_ge_percent':round(self.participant.vars['overall_ge_percent']*100, 2),
+        'revwPg_round_points':self.player.participant.vars['round_base_points'],
+        'revwPg_self_ge_overallavg':self.participant.vars['overall_own_ge'],
+        'revwPg_counterpart_round_points':self.player.get_others_in_group()[0].participant.vars['round_base_points'],
+
         }
 
 
@@ -431,12 +484,11 @@ class A_Stage3(Page):
 class WaitPage_F2(WaitPage):
 
     def is_displayed(self):
-        return (self.round_number == 1)
+        return (self.player.stage_round_count  <= self.session.config['stage_round_count'])
 
 
     def after_all_players_arrive(self):
         # another wait page, with logic to decide to skip all next rounds. 
-        self.group.A3A4_update()
         self.group.nature_move()
 
 
@@ -444,13 +496,9 @@ class WaitPage_F2(WaitPage):
 class Nature(Page):
 
     def is_displayed(self):
-        return ((self.round_number == 1) 
-            & (self.participant.vars['end_this_stage_round'] == False) 
-            & (self.participant.vars['stage_round'] <= Constants.stage_rounds))
+        return (self.player.stage_round_count  <= self.session.config['stage_round_count'])
 
     def vars_for_template(self):
-
-        self.group.Nature_update()
 
         return {
             'stage_round':self.participant.vars['stage_round'],
@@ -459,31 +507,43 @@ class Nature(Page):
             'counter_party_role':self.player.get_others_in_group()[0].participant.vars['Role'],    
             'counter_party_score':self.player.get_others_in_group()[0].participant.vars['final_score'], 
             'countery_party_ret_score':self.player.get_others_in_group()[0].participant.vars['ret_score'], 
-            'counter_party_ge':self.player.get_others_in_group()[0].participant.vars['final_ge'],  
             'counter_party_overall_ge_percent':round(self.player.get_others_in_group()[0].participant.vars['overall_ge_percent']*100,2),       
             'self_ret_score':self.participant.vars["ret_score"], 
             'self_score':self.participant.vars['final_score'],
-            'self_ge':self.participant.vars['final_ge'],
             'self_overall_ge_percent':round(self.participant.vars['overall_ge_percent']*100, 2),
             'nature':self.player.Nature,
+        'revwPg_round_points':self.player.participant.vars['round_base_points'],
+        'revwPg_self_ge_overallavg':self.participant.vars['overall_own_ge'],
+        'revwPg_counterpart_round_points':self.player.get_others_in_group()[0].participant.vars['round_base_points'],
+
         }
 
 
     def before_next_page(self):
         self.participant.vars['end_this_stage_round'] = True #end this round
 
+        # define "termianl choice/node", see models.  
+        self.player.set_terminal_node()
+
+
 class Results(Page):
 
     def is_displayed(self):
-        return ((self.round_number == 1) 
-            & (self.participant.vars['end_this_stage_round'] == True)
-            & (self.participant.vars['stage_round'] <= Constants.stage_rounds))
+        return (self.player.stage_round_count  <= self.session.config['stage_round_count'])
 
 
     def vars_for_template(self):
 
-        # define "termianl choice/node", see models.  
-        self.player.set_terminal_node()
+        TN = self.player.terminal_choice
+        if ((TN == "A1") |(TN == "A2")):
+            self.group.A1A2_update()
+        elif ((TN == "F1") |(TN == "F2")):
+            self.group.F1F2_update()
+        elif ((TN == "A3") |(TN == "A4")):
+            self.group.A3A4_update()
+        elif ((TN == "N1") |(TN == "N2")):
+            self.group.Nature_update()
+         
 
         return {
             'stage_round':self.participant.vars['stage_round'],
@@ -493,16 +553,19 @@ class Results(Page):
             'counter_party_role':self.player.get_others_in_group()[0].participant.vars['Role'],    
             'counter_party_score':self.player.get_others_in_group()[0].participant.vars['final_score'], 
             'countery_party_ret_score':self.player.get_others_in_group()[0].participant.vars['ret_score'], 
-            'counter_party_ge':self.player.get_others_in_group()[0].participant.vars['final_ge'],  
             'counter_party_overall_ge_percent':self.player.get_others_in_group()[0].participant.vars['overall_ge_percent']*100,   
             'self_ret_score':self.participant.vars["ret_score"], 
             'self_score':self.participant.vars['final_score'],
-            'self_ge':self.participant.vars['final_ge'],
             'self_overall_ge_percent':self.participant.vars['overall_ge_percent']*100,
             'self_round_payoff':self.player.round_payoff,
             'counter_party_round_payoff':self.player.get_others_in_group()[0].round_payoff,
             'terminal_choice':self.player.terminal_choice,
+
+            'self_avg_individual_exchange':self.player.postStage_self_individual_exchange,
+            'self_ge':self.player.postStage_self_ge,
+            'round_points':self.player.postStage_round_points,
             
+  
         }
 
     def before_next_page(self):
@@ -515,7 +578,7 @@ class Results(Page):
 class FinalResults(Page):
 
     def is_displayed(self):
-        return (self.participant.vars['stage_round'] > Constants.stage_rounds)
+        return (self.player.stage_round_count  > self.session.config['stage_round_count'])
 
 
     def vars_for_template(self):
@@ -540,6 +603,11 @@ class FinalResults(Page):
                 table_rows.append(row)
                 roundNum += 1
 
+
+        self.player.payoff = self.player.payoff + (self.participant.vars['final_score'] * self.participant.vars['final_score_discounter'])
+        self.player.payoff = round_up(self.player.payoff, 5)
+
+
         #this logs payoffs into the otree "SessionPayments" screen, 
         # it needs to come after prev_player.payoff is set
         self.session.config['participation_fee'] = c(30).to_real_world_currency(self.session)
@@ -549,10 +617,11 @@ class FinalResults(Page):
         'debug': settings.DEBUG,
         'part1_score':self.participant.vars["ret_score"],
         'part2_score':self.participant.vars['final_score'],
+        'part2_cash':(self.participant.vars['final_score'] * self.participant.vars['final_score_discounter']),
         'final_score':c(round(final_score,1)),
-        'variable_cash':c(self.player.payoff).to_real_world_currency(self.session),
+        'part3_cash':self.player.payoff - (self.participant.vars['final_score'] * self.participant.vars['final_score_discounter']),
         'table_rows': table_rows,
-        'Role_self':self.player.role,
+        'Role_self':self.player.player_role,
         'showupfee':self.session.config['participation_fee'],
         'point_aed_convert':round(1/prev_player.participant.vars['final_score_discounter'],2),
         'final_cash':(c(self.player.payoff).to_real_world_currency(self.session) + self.session.config['participation_fee'])

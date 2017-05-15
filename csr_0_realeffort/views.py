@@ -63,10 +63,6 @@ class TranscribeTask(Page):
                 correct_last_round = "Your last guess was <font color='red'>incorrect</font>"
 
 
-
-
-
-
         # Page variables
         return {
             'end_time': self.participant.vars['end_time'],
@@ -146,6 +142,7 @@ class TaskResults(Page):
             all_ret_scores.append(op_ret_final_score)
 
         ##### save all variables ###############################################
+        # for use in later parts of the experiment. 
 
         self.participant.vars['ret_correct'] = int(total_correct)
         self.participant.vars['ret_score']   = total_payoff # own final score

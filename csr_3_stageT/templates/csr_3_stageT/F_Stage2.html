@@ -1,41 +1,40 @@
 {% extends "global/BaseCSR.html" %}
 {% load staticfiles otree_tags %}
+{% load mathfilters %}
 
 {% block title %}
-    Select your decision
+    Round {{stage_round}} of {{ session.config.stage_round_count }} - Select your decision
 {% endblock %}
 
 {% block content %}
+
+    <p>
+        In making this decision, assume Player A selected A2. 
+    </p>  
     <p>
         You will be a <b><font color="Blue">Role F</b></font> participant for the remainder of this experiment.
     </p>
 
-<!--     <p>
-        Investment round: {{stage_round}} of 5
-    </p> -->
-
     <p>
-    	In making this decision, assume Player A just selected A2.
+        In Part 2 you contributed on average {{ participant.vars.overall_ge_percent|mul:100|floatformat:"0" }}%. 
+        Your counterpart, Role F overall on average  contributed {{ counter_party_overall_ge_percent|floatformat:"2" }}% to the group exchange.
     </p>
 
-    <p>
-        Your earned {{ self_score|floatformat:"2" }} in the randomly chosen paid round in Part 2. Overall on average, you contribted {{self_overall_ge_percent|floatformat:"2"}}% to the group exchange. In Part 1 you earned {{ self_ret_score|floatformat:"2" }}. 
-    </p>
+    <ul>
+        <p>
+            <label for="id_F_stage2_1"><input type="radio" id="id_F_stage2_1" value="F1" name="F_stage2" required=""> 
+            F1</label> - see "Scores with F1 Selected" in instructions below. 
+        </p>
+        <p>
+            <label for="id_F_stage2_2"><input type="radio" id="id_F_stage2_2" value="F2" name="F_stage2" required=""> 
+            F2</label> - means Role F does not choose to increase their baseline Group Exchange contribution. The Role A participant will then be asked to make another decision in Stage 3.
+        </p>
+    </ul>
 
-    <p>
-        Your counterpart, Role A earned {{counter_party_score|floatformat:"2"}} in the randomly chosen paid round in Part 2. Overall on average they contributed {{ counter_party_overall_ge_percent |floatformat:"2"}}% to the group exchange. In the typing task they earned {{countery_party_ret_score|floatformat:"2"}}. 
-    </p>
-
-
-	<p>
-	    {% for field in form %}
-	        {% formfield field %}
-	    {% endfor %}
-	</p>
 	    
         <center><img src="/static/img/stage2.png"/ height="300" align="center"></center>
 
-
+<br>
     {% next_button %}
 
 

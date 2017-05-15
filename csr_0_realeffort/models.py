@@ -30,9 +30,9 @@ First implementation by Curtis Kephart (curtiskephart@gmail.com) 2016.11
 
 class Constants(BaseConstants):
     name_in_url = 'csr_realEffort'
-    players_per_group = 1
-    task_timer = 30
-    num_rounds = 101
+    players_per_group = None
+    task_timer = 120
+    num_rounds = 126
 
 
     reference_texts = [
@@ -131,11 +131,37 @@ class Constants(BaseConstants):
         'vCVC',
         'MG3S',
         'kzpF',
-        'KF7D',
-        'vK9V',
-        'SFvH',
-        'b9yH',
-        'V8WA',
+        'Y90ZQ4gFs287',
+        'WSx7IJ8YMeAF',
+        '6gt6k1dZfDdL',
+        '8gkmGZY36lBI',
+        'tz4hJ6NVBPBq',
+        'SY3BOD92q0Uc',
+        'FAojzXfsCvsc',
+        '7Hoep0BQ5EgX',
+        'TXVUwqGND0Hw',
+        'Ig6hl84vsv05',
+        'Lk5bKpQ13kTv',
+        'bRsi7Cbd4gPs',
+        'jY3X0XKXib1R',
+        'e3Hs759fdegV',
+        'NMtMkEyyyly3',
+        'O2lG0j7cMaRk',
+        'rkegxeTnoxM8',
+        'Cs7Yn0FOgqFi',
+        'GpZTwpsLUq0h',
+        'EJB4YDNxKcQV',
+        'zRAyc20FFGiM',
+        'GSyitZNp3aCa',
+        'fZPnL4W4Rk8U',
+        'Cuw7jF0ERvtk',
+        '7JAOg5tGMBic',
+        'BXVXpjlFuIl6',
+        '7zQTu9YeU0hn',
+        'M8XxBg30iMjq',
+        'Bv4jsM4PphLB',
+        '3wdvp9cQMEKU',
+        'V4x7BM8oqpMN',
 	]
 
 

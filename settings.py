@@ -70,7 +70,7 @@ USE_POINTS = True
 LANGUAGE_CODE = 'en'
 
 # if an app is included in SESSION_CONFIGS, you don't need to list it here
-INSTALLED_APPS = ['otree']
+INSTALLED_APPS = ['otree','mathfilters']
 
 # SENTRY_DSN = ''
 
@@ -166,8 +166,24 @@ SESSION_CONFIGS = [
     #     'final_score_discounter':0.4,
     # },
     {
+        'name': 'csr_0_realeffort',
+        'display_name': "CSR: RET",
+        'num_demo_participants': 1,
+        'app_sequence': [
+            'csr_0_realeffort',
+        ],
+        'real_world_currency_per_point': 1.0,
+        'ret_time': 120,
+        'vcm_round_count': 10,
+        'GE_min':5,
+        'GE_max':95,
+
+        'participation_fee': 30.0,
+        'final_score_discounter':0.4,
+        },
+    {
         'name': 'csr_1_quiz',
-        'display_name': "CSR: quiz",
+        'display_name': "CSR: Quiz",
         'num_demo_participants': 2,
         'app_sequence': [
             'csr_1_quiz',
@@ -175,13 +191,62 @@ SESSION_CONFIGS = [
         'real_world_currency_per_point': 1.0,
         'ret_time': 120,
         'vcm_round_count': 10,
+        'mpcr':0.5,
         'GE_min':5,
-        'GE_max':10,
+        'GE_max':95,
+
+        'mpcr':0.5,
+        'participation_fee': 30.0,
+        'final_score_discounter':0.4,
+        },
+    {
+        'name': 'csr_2_vcm',
+        'display_name': "CSR: VCM",
+        'num_demo_participants': 4,
+        'app_sequence': [
+            'csr_2_vcm',
+        ],
+        'real_world_currency_per_point': 1.0,
+        'ret_time': 120,
+        'vcm_round_count': 4,
+        'GE_min':5,
+        'GE_max':95,
 
         'participation_fee': 30.0,
         'final_score_discounter':0.4,
         },
+    {
+        'name': 'csr_vcm_stage',
+        'display_name': "CSR: VCM + Stage",
+        'num_demo_participants': 4,
+        'app_sequence': [
+            'csr_2_vcm','csr_3_stageT',
+        ],
+        'real_world_currency_per_point': 1.0,
+        'vcm_round_count': 4,
+        'stage_round_count': 4,
+        'ret_time': 120,
+        'GE_min':5,
+        'GE_max':95,
+        'participation_fee': 30.0,
+        'final_score_discounter':1.0,
+        'GE_Low_A':15,
+        'GE_Low_F':5,
+        'mpcr':0.5,
+        'boycott_cost':10,
+        'passive_ge_contrib':40,
+        'A1_A_mult':1.0,
+        'A1_F_mult':1.0,
+        'F1_A_mult':1.0,
+        'F1_F_mult':3.0, # ensure that (F1_F_mult * (GE_Low_F)) < 20, otherwise things break. 
+        'A3_A_mult':1.0,
+        'A3_F_mult':1.0,
+        'N1_prob':0.75, # be sure to pick these to ensure easy numbers for quiz!
 
+
+
+
+        },
 
 
 ]

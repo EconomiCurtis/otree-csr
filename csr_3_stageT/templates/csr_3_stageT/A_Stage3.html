@@ -1,8 +1,9 @@
 {% extends "global/BaseCSR.html" %}
 {% load staticfiles otree_tags %}
+{% load mathfilters %}
 
 {% block title %}
-    Select your decision
+    Round {{stage_round}} of {{ session.config.stage_round_count }} - Select your decision
 {% endblock %}
 
 {% block content %}
@@ -11,22 +12,32 @@
 		In making this decision, assume Player F selected F2. 
 	</p>  
 
-<!-- 	<p>
-        Investment round: {{stage_round}} of 5
-    </p> -->
     <p>
-        Your earned {{ self_score|floatformat:"2" }} in the randomly chosen paid round in Part 2. Overall on average, you contribted {{self_overall_ge_percent|floatformat:"2"}}% to the group exchange. In Part 1 you earned {{ self_ret_score|floatformat:"2" }}. 
+        You will be a <b><font color="Blue">Role F</b></font> participant for the remainder of this experiment.
     </p>
 
     <p>
-        Your counterpart, Role F earned {{counter_party_score|floatformat:"2"}} in the randomly chosen paid round in Part 2. Overall on average they contributed {{ counter_party_overall_ge_percent|floatformat:"2" }}% to the group exchange. In the typing task they earned {{countery_party_ret_score|floatformat:"2"}}. 
+        In Part 2 you contributed on average {{ participant.vars.overall_ge_percent|mul:100|floatformat:"0" }}%. 
+        Your counterpart, Role F overall on average  contributed {{ counter_party_overall_ge_percent|floatformat:"2" }}% to the group exchange.
     </p>
 
-    <p>
-        {% for field in form %}
-            {% formfield field %}
-        {% endfor %}
-    </p>
+    <ul>
+        <p>
+            <label for="id_A_stage3_1"><input type="radio" id="id_A_stage3_1" value="A3" name="A_stage3" required=""> 
+            A3</label> - see Baseline Scores in instructions below. 
+        </p>
+        <p>
+            <label for="id_A_stage3_2"><input type="radio" id="id_A_stage3_2" value="A4" name="A_stage3" required=""> 
+            A4</label> - see Stage 4 instructions below.
+            <br>  If <b>A4</b> in selected then both player's scores will be randomly selected by the computer. 
+            <ul>
+                <p><b>N1</b>: With probability {{ session.config.N1_prob }} the Role F participant will contribute {{session.config.F1_F_mult}} times his or her original contribution to the Group Exchange, the amount they would have contributed had Player F chosen F1 in Stage 2.
+                <p><b>N2</b>: With probability {{ 1|sub:session.config.N1_prob }}, the Role F participant will contribute the same amount that he or she originally contributed.
+            </ul>
+            
+            <p><strong><u>In either outcome the <font color='red'>Role A</font> player will have to pay a fee of {{ session.config.boycott_cost }}</strong></u>.
+        </p>
+    </ul>
     
         <center><img src="/static/img/stage3.png"/ height="300" align="center"></center>
     <p>
@@ -36,6 +47,7 @@
 
 
     	<br><br>
+    <p>    
         Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a>
     </p>
 

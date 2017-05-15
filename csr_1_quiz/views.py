@@ -4,6 +4,7 @@ from otree.api import Currency as c, currency_range
 from .models import Constants
 from django.conf import settings
 import time
+import utils_csr
 
 
 class Instructions(Page):
@@ -30,7 +31,7 @@ class quiz(Page):
 
     def quiz_user_answer_error_message(self, value):
         if (value != self.player.quiz_sol):
-            return 'Incorrect'
+            return 'Incorrect. Feel free to raise your hand to ask for help. '
 
     def vars_for_template(self):
         return {
@@ -42,13 +43,17 @@ class quiz(Page):
 
 ####################### Quiz Solution #########################################
 class quiz_sol(Page):
+    form_model = models.Player
 
-    def is_displayed(self):
-        return ((self.round_number > 2) & (self.round_number < 4))
+    def vars_for_template(self):
+        return {
+            'debug': settings.DEBUG,
+            'page_title':"Quiz " +  str(self.round_number) + " Solution",
+        }
 
 class WaitPage(WaitPage):
     def is_displayed(self):
-        return self.round_number == 14
+        return self.round_number == Constants.num_rounds
     def after_all_players_arrive(self):
         pass
         # for p in self.group.get_players():

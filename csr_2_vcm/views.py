@@ -14,7 +14,7 @@ class WaitPage1(WaitPage):
     
         #if no ret score, get own score from ret in part 1.
         if 'ret_score' not in self.participant.vars: 
-            ret_score = random.choice([62,63,64,65])
+            ret_score = random.choice([19,20,21,22])
             self.participant.vars["ret_score"] = ret_score
         else: 
             ret_score = self.participant.vars["ret_score"]
@@ -96,7 +96,11 @@ class SelectInvestment(Page):
         pass
 
     def is_displayed(self):
-        return self.participant.vars['vcm_round_number'] <= self.participant.vars['vcm_round_count']
+        return self.round_number <= self.participant.vars['vcm_round_count']
+
+    def group_exchange_percent_error_message(self, value):
+        if not (value < self.session.config['GE_max'] or value > self.session.config['GE_min']):
+            return 'Must be more than 50'
 
     def vars_for_template(self):
 
@@ -128,14 +132,14 @@ class WaitPage2(WaitPage):
     def is_displayed(self):
         # if self.participant.vars['vcm_round_number'] <= self.participant.vars['vcm_round_count']:
         #     self.player.group_exchange_percent = float(self.player.group_exchange) / float(self.player.group_exchange + self.player.individual_exchange)
-        return self.participant.vars['vcm_round_number'] <= self.participant.vars['vcm_round_count']
+        return self.round_number <= self.participant.vars['vcm_round_count']
 
 
 class SelectInvestment_Review(Page):
-
+    wait_for_all_groups = True
 
     def is_displayed(self):
-        return self.participant.vars['vcm_round_number'] <= self.participant.vars['vcm_round_count']
+        return self.round_number <= self.participant.vars['vcm_round_count']
 
 
     def vars_for_template(self):
@@ -160,7 +164,7 @@ class SelectInvestment_Review(Page):
             op_group_exchange_thisround.append(round(op.group_exchange, 2))
 
         score_op_individual_exchange_thisround = 0 * sum(op_individual_exchange_thisround)
-        score_op_group_exchange_thisround = 1/2 * sum(op_group_exchange_thisround)
+        score_op_group_exchange_thisround = self.player.mpcr * sum(op_group_exchange_thisround)
 
 
         # get own ge_percent, avg ge contribution for all rounds.  
@@ -173,7 +177,7 @@ class SelectInvestment_Review(Page):
 
         # all players in group, ge_percent; avg ge contribution for all rounds.  
         ge_percent_list = []
-        for op in self.group.get_players():
+        for op in self.subsession.get_players():
             op_ge_percent = []
             op_ge = []
             for prev_op in op.in_all_rounds():
@@ -194,9 +198,10 @@ class SelectInvestment_Review(Page):
             'op_scores':op_scores,
             'op_scores_sum':op_scores_sum,
             'self_individual_exchange':self.player.individual_exchange,
+            'self_individual_exchange_percent':(1 - self.player.group_exchange_percent),
             'self_group_exchange':self.player.group_exchange,
             'self_group_exchange_percent':self.player.group_exchange_percent,
-            'group_exchange_score':(1/2)*self.player.group_exchange,
+            'group_exchange_score':(self.player.mpcr)*self.player.group_exchange,
             'op_individual_exchange_thisround':op_individual_exchange_thisround,
             'op_group_exchange_thisround':op_group_exchange_thisround,
             'score_op_group_exchange_thisround':score_op_group_exchange_thisround,
@@ -204,7 +209,7 @@ class SelectInvestment_Review(Page):
             'round_points':self.player.round_points,
             'overall_own_ge_percent':own_ge_percent,
             'overall_ge_percent_list':ge_percent_list,
-            'overall_ge_list':self.participant.vars['overall_ge_list'],
+            'overall_ge_list':self.participant.vars['overall_ge_list']
         } 
 
 
@@ -257,7 +262,6 @@ class Part3_prep(Page):
         # get score for VCM round. 
         # randomly select a round, and save the final score and group exchange contrib
         final_scores = []
-        final_ges = []
         ret_scores = []
 
         for p in self.group.get_players():
@@ -265,25 +269,19 @@ class Part3_prep(Page):
             p.final_score = p.in_round(p.participant.vars['paid_round']).round_points
             final_scores.append(p.in_round(p.participant.vars['paid_round']).round_points)
             
-            p.final_ge = p.in_round(p.participant.vars['paid_round']).group_exchange
-            final_ges.append(p.in_round(p.participant.vars['paid_round']).group_exchange)
-
             ret_scores.append(p.participant.vars['ret_score'])
 
         self.player.paid_round = self.participant.vars['paid_round']
 
         self.participant.vars['final_scores'] = final_scores
-        self.participant.vars['final_ges'] = final_ges
         #session vars to be used in stage game
         self.session.vars['final_scores'] = final_scores
-        self.session.vars['final_ges'] = final_ges
         # self.session.vars['player_role_list'] = player_role_list #handled in models.py now
         self.participant.vars["ret_scores"] = ret_scores
 
         #set up participant variables
         # self.participant.vars['Role'] defined in models.py set_roles
         self.participant.vars['final_score'] = self.player.final_score
-        self.participant.vars['final_ge'] = self.player.final_ge
         # self.participant.vars["ret_score"] handled above
         # self.participant.vars["overall_ge_percent"] defined in models.py set_roles
 
@@ -310,8 +308,6 @@ class Part3_prep(Page):
             'final_scores':self.participant.vars['final_scores'],
             'final_score':self.participant.vars['final_score'],
             'self_final_score':self.participant.vars['final_scores'][self.player.id_in_group - 1],
-            'final_ges':self.participant.vars['final_ges'],
-            'final_ge':self.participant.vars['final_ge'],
             'ret_scores':self.participant.vars["ret_scores"],
             'ret_score':self.participant.vars["ret_score"],
             'overall_ge_percent_list':self.participant.vars['overall_ge_percent_list'],
@@ -319,9 +315,10 @@ class Part3_prep(Page):
             'player_role_list':self.participant.vars['player_role_list'],
             
             'debug': settings.DEBUG,
+            'GE_Rank': self.participant.vars['GE_Rank'],
+            'GE_Rank_list':self.participant.vars['GE_Rank_list'],
+            'number_of_players':max(p.participant.vars['id_in_subsession'] for p in self.subsession.get_players() if p.group_exchange_percent != None),
         }
-
-
 
 
 class WaitPage3(WaitPage):
