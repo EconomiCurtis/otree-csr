@@ -185,6 +185,7 @@ class quiz1(Page):
 
     def vars_for_template(self):
         return {
+            'Role_self':self.participant.vars["Role"],
             'debug': settings.DEBUG,
         }
     
@@ -247,6 +248,7 @@ class quiz2(Page):
 
     def vars_for_template(self):
         return {
+            'Role_self':self.participant.vars["Role"],
             'debug': settings.DEBUG,
         }
 
@@ -575,7 +577,9 @@ class FinalResults1(Page):
 
 
     form_model = models.Player
-    form_fields = ['q_birthMonth','q_birthYear','q_sex','q_languages','q_birthMonth','q_birthMonth','q_major','q_part3_A1strat','q_part3_F1strat','q_part3_A3strat']
+    form_fields = [
+        'q_birthMonth','q_birthYear','q_sex','q_languages','q_birthMonth','q_birthMonth','q_major',
+        'q_part2strat','q_part3_A1strat','q_part3_F1strat','q_part3_A3strat']
 
     def is_displayed(self):
         return (self.round_number  >= self.session.config['stage_round_count'])
