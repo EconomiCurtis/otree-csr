@@ -95,7 +95,7 @@ class Group(BaseGroup):
 		# 		F_Endow = p.participant.vars['ret_score'] + Constants.endowment_boost
 
 		for p in self.get_players():
-			p.set_payoff() # set scores # set scores
+			p.set_round_payoff() # set scores # set scores
 
 
 
@@ -113,7 +113,7 @@ class Group(BaseGroup):
 				elif p.participant.vars['Role'] == 'F':
 					F_GE = 1.5 * (p.participant.vars['overall_ge_percent'] * p.participant.vars['ret_score']) 
 					F_Endow = p.participant.vars['ret_score'] + Constants.endowment_boost
-			p.set_payoff() # set scores
+			p.set_round_payoff() # set scores
 
 		elif F_player.terminal_choice == 'F2': #don't think i want to do anything in this case 
 			pass
@@ -138,16 +138,19 @@ class Group(BaseGroup):
 					F_Endow = p.participant.vars['ret_score'] + Constants.endowment_boost
 
 			for p in self.get_players():
-				p.set_payoff() # set scores # set scores
+				p.set_round_payoff() # set scores # set scores
 
 		elif A_player.terminal_choice == 'A4':  #A4
 			pass
 
 
 	def nature_move(self):
-		if random.randint(1,4) == 1:
-			nature_move = 'N2' #25% chance of N2
-		else: nature_move = 'N1'
+
+		cutoff = int((self.session.config['N1_prob'] * 100 ) // 1)
+
+		if random.randint(0,100) <= cutoff:
+			nature_move = 'N1' # self.session.config['N1_prob'] chance of N1
+		else: nature_move = 'N2'
 
 		for p in self.get_players():
 			p.Nature = nature_move
@@ -166,7 +169,7 @@ class Group(BaseGroup):
 					F_GE = 1.5 * (p.participant.vars['ret_score'] * p.participant.vars['overall_ge_percent']) 
 					F_Endow = p.participant.vars['ret_score'] + Constants.endowment_boost
 			for p in self.get_players():
-				p.set_payoff() # set scores
+				p.set_round_payoff() # set scores
 		elif F_player.terminal_choice == 'N2':
 			for p in self.get_players():
 				if p.participant.vars['Role'] == 'A':
@@ -176,7 +179,7 @@ class Group(BaseGroup):
 					F_GE = (p.participant.vars['overall_ge_percent'] * p.participant.vars['ret_score'])
 					F_Endow = p.participant.vars['ret_score'] + Constants.endowment_boost
 			for p in self.get_players():
-				p.set_payoff() # set scores
+				p.set_round_payoff() # set scores
 
 
 
@@ -268,16 +271,13 @@ class Player(BasePlayer):
 	vcm_ge_percent = models.FloatField(
 		doc="player's average group exchange contribution in vcm rounds")
 
-
-	op_ge_overallavg = models.CharField(
-	    doc = 'this subjects opposing player overall average group contribution from vcm.')
-
-	round_base_points = models.FloatField(
-		doc = ''' player's base score. if no adjustments are made to own or counterpart GE contributions, player will earn this ''')
+	passive_Player_Earnings = models.FloatField(
+		doc = ''' The score of this round's passive player.  ''')
 
 
 
-	def set_payoff(self):
+
+	def set_round_payoff(self):
 		"""calc player payoffs"""
 		''' called inside group functions, eg A1A2_update '''
 
@@ -302,15 +302,35 @@ class Player(BasePlayer):
 				p.postStage_op_individual_exchange = str(20 - F_GE)
 				p.postStage_op_group_exchange = str(F_GE)
 				p.round_payoff = A_score
-				p.postStage_round_points = p.round_payoff
+				p.postStage_round_points = A_score
 
 			elif (p.participant.vars['Role'] == 'F'):
 				p.postStage_self_individual_exchange = F_GE
 				p.postStage_self_ge = p.GE_Low_F
 				p.postStage_op_individual_exchange = str(20 - p.GE_Low_A)
 				p.postStage_op_group_exchange = str(p.GE_Low_A)
+				p.postStage_round_points = F_score
 				p.round_payoff = F_score
-				p.postStage_round_points = p.round_payoff
+
+	def set_payoff(self, round):
+		# in views, determine round to pay
+		# similar to VCM
+		pass
+
+
+	def passivePlayerEarnings(self):
+		for p in self.group.get_players():
+
+			# group exchange
+			F_GE = (p.GE_Low_F)
+			if ((p.terminal_choice == 'F1') | (p.terminal_choice == 'N1')):
+				F_GE = (p.GE_Low_F * p.F1_F_mult)
+			GE = p.GE_Low_A + F_GE + 40
+
+			self.passive_Player_Earnings = (GE * p.mpcr)
+
+			#scores
+			return (GE * p.mpcr)
 
 
 
@@ -318,6 +338,12 @@ class Player(BasePlayer):
 	stage_round_count = models.PositiveIntegerField(
 		doc='The stage round number.'
 		)
+
+	paid_round=models.PositiveIntegerField(
+		doc=''' Paid stage round ''')
+
+	paid_active_round_score=models.FloatField(
+		doc=''' Score from paid actie player round''')
 
 	round_payoff=models.FloatField(
 		doc="this player's earnings this round")
@@ -354,10 +380,6 @@ class Player(BasePlayer):
 		doc="Probability of N1, where prob of N2 is (1 - N1_prob)")
 
 
-
-
-	round_payoff=models.FloatField(
-		doc="this player's earnings this round")
 
 	A_stage1 = models.CharField(
 		initial=None,
@@ -432,4 +454,75 @@ class Player(BasePlayer):
 	postStage_round_points = models.FloatField(
 		doc='''"player's final score from stage game"''')
 
+	followup_1 = models.CharField(
+		)
 
+	# Survey questions
+
+	q_birthMonth = models.PositiveIntegerField(
+		verbose_name="What is the month of your birth?",
+		choices=[1,2,3,4,5,6,7,8,9,10,11,12],
+		doc = ''' birth month ''',
+		)
+	q_birthYear = models.PositiveIntegerField(
+		verbose_name="What is the year of your birth?",
+		min=1900,
+		max = 2016,
+		doc = ''' birth year ''',
+		)
+	q_sex = models.CharField(
+		verbose_name="Are you male or female?",
+		choices=["male","female"],
+		doc = ''' male or female ''',
+		)
+
+	q_languages = models.CharField(
+		verbose_name = "What language do you speak most often at home?",
+		doc = '''languages''',
+		)
+
+	q_YearsInUAE = models.PositiveIntegerField(
+		verbose_name="How long have you lived in the UAE (in years)?",
+		doc = ''' How long have you lived in the UAE (in years)? ''',
+		)
+
+	q_nationality = models.CharField(
+		verbose_name="What is your nationality?",
+		doc = ''' What is your nationality? ''',
+		)
+
+	q_major = models.CharField(
+		verbose_name="What is your major?",
+		doc = ''' What is your major? ''',
+		)
+
+	q_part2strat = models.CharField(
+		verbose_name="In Part 2, how did you decide how much to contribute to the group exchange?",
+		doc = ''' In Part 2, how did you decide how much to contribute to the group exchange? ''',
+		widget=widgets.Textarea
+		)
+
+	q_part3_A1strat = models.CharField(
+		blank = None,
+		verbose_name="In Part 3, if you were a Role A player, how did you decide between A1 and A2?",
+		doc = ''' In Part 3, if you were a Role A player, how did you decide between A1 and A2? ''',
+		widget=widgets.Textarea)
+		
+	q_part3_F1strat = models.CharField(
+		blank = None,
+		verbose_name="In Part 3, if you were a Role F player, how did you decide between F1 and F2?",
+		doc = ''' In Part 3, if you were a Role F player, how did you decide between F1 and F2? ''',
+		widget=widgets.Textarea)
+		
+	q_part3_A3strat = models.CharField(
+		blank = None,
+		verbose_name="In Part 3, if you were a Role A player, how did you decide between A3 and A4?",
+		doc = ''' In Part 3, if you were a Role A player, how did you decide between A3 and A4? ''',
+		widget=widgets.Textarea)
+
+	q_part3_dynamic = models.CharField(
+		blank = None,
+		verbose_name="In Part 3, how did your strategy change over the many rounds you played?",
+		doc = ''' In Part 3, how did your strategy change over rounds? ''',
+		widget=widgets.Textarea)
+		

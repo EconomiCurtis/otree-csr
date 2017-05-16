@@ -3,7 +3,7 @@
 {% load mathfilters %}
 
 {% block title %}
-    Results
+    Before we start
 {% endblock %}
 {% block content %}
 <!--     <p>
@@ -12,21 +12,24 @@
 
     <p>
         You are <strong>{% if participant.vars.Role == "A" %}<font color='red'>Role A</font>{% else %}<font color='blue'>Role F</font>{% endif %}</strong>.
-        In Part 1 you earned {{revwPg_self_ret_score}}. In Part 2 you contributed on average {{ participant.vars.overall_ge_percent|mul:100|floatformat:"0" }}%.
+        In Part 2 you contributed on average {{ participant.vars.overall_ge_percent|mul:100|floatformat:"0" }}%.
     </p>
 
     <p>
-        Your counterpart is Role <strong>{% if participant.vars.Role == "A" %}<font color='blue'>Role F</font>{% else %}<font color='red'>Role A</font>{% endif %}</strong>.
-        In Part 1 that person earned {{revwPg_counter_party_ret_score}} points.  In Part 2 they contributed on average {{ revwPg_counter_ge_percent|mul:100|floatformat:"0" }}%.
+        Your counterpart is  <strong>{% if participant.vars.Role == "A" %}<font color='blue'>Role F</font>{% else %}<font color='red'>Role A</font>{% endif %}</strong>.
+        In Part 2 they contributed on average {{ revwPg_counter_ge_percent|mul:100|floatformat:"0" }}%.
     </p>
 
 
     <p>
-        There are two other members of your group. You will not know about their group exchange contribution or earnings in previous rounds, but your decisions will affect their score as passive players. Additionally, you will be matched up with a group as a passive player, and the active players' decisions in those rounds will affect your score as a passive player. 
+        There are two other members of your group. You will not know about their group exchange contribution or earnings in other rounds, but your decisions will affect their score as passive players. Additionally, you will be matched up with a group as a passive player, and the active players' decisions in those rounds will affect your score as a passive player. 
+    </p>
+    <p>
+        Click next
     </p>
 
     <p>
-        Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a>
+        <!-- Full Instructions <a href="#" id="hide">Hide</a> - <a href="#" id="show">Show</a> -->
     </p>
 
     <p>

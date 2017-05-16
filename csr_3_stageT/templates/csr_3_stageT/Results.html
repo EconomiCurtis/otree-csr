@@ -3,7 +3,8 @@
 {% load mathfilters %}
 
 {% block title %}
-    Results
+    Results Round {{stage_round}} of {{ session.config.stage_round_count }}
+
 {% endblock %}
 {% block content %}
 <!--     <p>
@@ -11,25 +12,30 @@
     </p> -->
 
     <p>
-        You are Role {{ Role_partic_var }}.
+        You are <strong>{% if participant.vars.Role == "A" %}<font color='red'>Role A</font>{% else %}<font color='blue'>Role F</font>{% endif %}</strong>.
     </p>
     <p>
-        You and your counterparty ended up at {{ terminal_choice }}.
+        In Part 2 you contributed on average {{ participant.vars.overall_ge_percent|mul:100|floatformat:"0" }}% to the group exchange.
+    </p>
+    <p> 
+        Your counterpart  contributed on average {{ counter_party_overall_ge_percent|floatformat:"2" }}% to the group exchange.
+    </p>
+    <p>
+        You and your counterparty ended up at <b>{{ terminal_choice }}</b>.
     </p>
 
 
     <p>
-        Your payoff is {{ self_round_payoff|floatformat:"2" }}.
-    </p>
-    <p>
-    <font color='red'><strong>You left off here!!</strong></font>
-        Your counterpart's payoff is {{ counter_party_round_payoff|floatformat:"2" }}.
-    </p>
-    <p>
-        Passive Player 1 received .
+        <b>Your payoff is {{ self_round_payoff|floatformat:"2" }}</b>.
     </p>
     <p>
         Your counterpart's payoff is {{ counter_party_round_payoff|floatformat:"2" }}.
+    </p>
+    <p>
+        Passive Player 1 received {{passiveplayerearnings|floatformat:"2"}}.
+    </p>
+    <p>
+        Passive Player 2 received {{passiveplayerearnings|floatformat:"2"}}.
     </p>
 
     <p>

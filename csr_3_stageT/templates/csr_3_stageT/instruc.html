@@ -330,7 +330,7 @@
 
         <p>If the Role A participant chooses <b>A4</b> in Stage 3, then both player's scores will be randomly selected by the computer. <strong><u>In either outcome the <font color='red'>Role A</font> player will have to pay a fee of {{ session.config.boycott_cost }}</strong></u>
             <ul>
-                <li><p><b>N1</b>: With probability {{ session.config.N1_prob }} the Role F participant will contribute {{session.config.F1_F_mult}} times his or her original contribution to the Group Exchange, the amount they would have contributed had Player F chosen F1 in Stage 2.
+                <li><p><b>N1</b>: <b><u>With probability {{ session.config.N1_prob }}</u></b> the Role F participant will contribute {{session.config.F1_F_mult}} times his or her original contribution to the Group Exchange, the amount they would have contributed had Player F chosen F1 in Stage 2.
 
             <style type="text/css">
         .tg  {border-collapse:collapse;border-spacing:0;border:none;margin:0px auto;}
@@ -351,7 +351,7 @@
         </style>
         <table class="tg">
           <tr>
-            <th class="tg-5jn8" colspan="6">Scores with N1 - Probability {{ session.config.N1_prob }}</th>
+            <th class="tg-5jn8" colspan="6">Scores with N1 - <u>Probability {{ session.config.N1_prob }}</u></th>
           </tr>
           <tr>
             <td class="tg-cwv5"></td>
@@ -497,7 +497,12 @@
         <br><br><hr>
         <h4>Passive Player Rounds</h4>
         <p>
-            Your payoffs will be determined by taking your score from one randomly selected round from a group in which you were an active player, and one group in which you were a passive player. 
+            Your final score will also reflect the score you receive from a randomly selected round in which you were a passive player. Incendentially, two other players will receive scores based on the performance of the passive players of rounds in which you were an active player. 
+        </p>
+        <br><br><hr>
+        <h4>Final Payment</h4>
+        <p>
+            The final amount you receive at the end of today's session will include the score you received from Part 2 ({{participant.vars.final_score|floatformat:"2"}} points), plus the randomly selected active player round to come, and the randomoly selected passive player round to come. 
         </p>
     </div>
 

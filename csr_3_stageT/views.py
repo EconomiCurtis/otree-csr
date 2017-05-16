@@ -8,6 +8,7 @@ import numpy
 import decimal
 import json
 from math import ceil
+import random
 
 def round_up(Num, RoundTo):
     ''' rounds up to nearest... RoundTo '''
@@ -302,14 +303,12 @@ class pregame(Page):
             sum(op_group_exchange) * 0.5
             )  
 
-        # log in data base facts. 
-        self.player.round_base_points = self.participant.vars['round_base_points'] = round_points
-        self.player.op_ge_overallavg = self.participant.vars['op_group_exchange'] = op_group_exchange
 
 
         return {
 
             # own info
+            'Role_self':self.participant.vars["Role"],
             'revwPg_self_group_id':self.group.get_players(),
             'revwPg_self_ge_overallavg':self.participant.vars['overall_own_ge'],
             'revwPg_self_ret_score':self.participant.vars["ret_score"],  
@@ -350,11 +349,11 @@ class A_Stage1(Page):
         if self.round_number == 1:
             self.player.stage_round_count = 1
         else:
-            self.player.stage_round_count = self.player.stage_round_count + 1
+            self.player.stage_round_count = self.round_number
 
         return (
             (self.participant.vars['Role'] == 'A') 
-            & (self.player.stage_round_count  <= self.session.config['stage_round_count']))
+            & (self.round_number  <= self.session.config['stage_round_count']))
 
     def vars_for_template(self):
 
@@ -362,6 +361,7 @@ class A_Stage1(Page):
 
         return {
 
+            'Role_self':self.participant.vars["Role"],
             'stage_round':self.participant.vars['stage_round'],
             'Role_partic_var':self.participant.vars["Role"],
             'counter_party_id':self.player.get_others_in_group(),
@@ -374,10 +374,8 @@ class A_Stage1(Page):
             'self_score':self.participant.vars['final_score'],
 
             'self_overall_ge_percent':round(self.participant.vars['overall_ge_percent']*100, 2),
-        'revwPg_round_points':self.player.participant.vars['round_base_points'],
         'revwPg_self_ge_overallavg':self.participant.vars['overall_own_ge'],
-        # 'revwPg_counterpart_round_points':self.player.get_others_in_group()[0].participant.vars['round_base_points'],
-
+     
         }
 
 
@@ -386,7 +384,7 @@ class A_Stage1(Page):
 class WaitPage_F1(WaitPage):
 
     def is_displayed(self):
-        return (self.player.stage_round_count  <= self.session.config['stage_round_count'])
+        return ((self.round_number  <= self.session.config['stage_round_count']))
 
 
     def after_all_players_arrive(self):
@@ -405,11 +403,12 @@ class F_Stage2(Page):
     def is_displayed(self):
         return (
             (self.participant.vars['Role'] == 'F')
-            & (self.player.stage_round_count  <= self.session.config['stage_round_count']))
+            & (self.round_number  <= self.session.config['stage_round_count']))
 
     def vars_for_template(self):
 
         return {
+            'Role_self':self.participant.vars["Role"],
             'stage_round':self.participant.vars['stage_round'],
             'Role_partic_var':self.participant.vars["Role"],
             'counter_party_id':self.player.get_others_in_group(),
@@ -422,9 +421,7 @@ class F_Stage2(Page):
             'self_score':self.participant.vars['final_score'],
 
             'self_overall_ge_percent':round(self.participant.vars['overall_ge_percent']*100, 2),
-        'revwPg_round_points':self.player.participant.vars['round_base_points'],
         'revwPg_self_ge_overallavg':self.participant.vars['overall_own_ge'],
-        'revwPg_counterpart_round_points':self.player.get_others_in_group()[0].participant.vars['round_base_points'],
 
         }
 
@@ -434,7 +431,7 @@ class F_Stage2(Page):
 class WaitPage_A1(WaitPage):
 
     def is_displayed(self):
-        return ((self.player.stage_round_count  <= self.session.config['stage_round_count']))
+        return ((self.round_number  <= self.session.config['stage_round_count']))
 
 
     def after_all_players_arrive(self):
@@ -456,11 +453,12 @@ class A_Stage3(Page):
     def is_displayed(self):
         return (
             (self.participant.vars['Role'] == 'A') 
-            & (self.player.stage_round_count  <= self.session.config['stage_round_count']))
+            & (self.round_number  <= self.session.config['stage_round_count']))
 
     def vars_for_template(self):
 
         return {
+            'Role_self':self.participant.vars["Role"],
         'stage_round':self.participant.vars['stage_round'],
         'Role_partic_var':self.participant.vars["Role"],
         'counter_party_id':self.player.get_others_in_group(),
@@ -471,10 +469,8 @@ class A_Stage3(Page):
         'self_ret_score':self.participant.vars["ret_score"], 
         'self_score':self.participant.vars['final_score'],
         'self_overall_ge_percent':round(self.participant.vars['overall_ge_percent']*100, 2),
-        'revwPg_round_points':self.player.participant.vars['round_base_points'],
         'revwPg_self_ge_overallavg':self.participant.vars['overall_own_ge'],
-        'revwPg_counterpart_round_points':self.player.get_others_in_group()[0].participant.vars['round_base_points'],
-
+  
         }
 
 
@@ -484,7 +480,7 @@ class A_Stage3(Page):
 class WaitPage_F2(WaitPage):
 
     def is_displayed(self):
-        return (self.player.stage_round_count  <= self.session.config['stage_round_count'])
+        return (self.round_number  <= self.session.config['stage_round_count'])
 
 
     def after_all_players_arrive(self):
@@ -496,11 +492,12 @@ class WaitPage_F2(WaitPage):
 class Nature(Page):
 
     def is_displayed(self):
-        return (self.player.stage_round_count  <= self.session.config['stage_round_count'])
+        return (self.round_number  <= self.session.config['stage_round_count'])
 
     def vars_for_template(self):
 
         return {
+            'Role_self':self.participant.vars["Role"],
             'stage_round':self.participant.vars['stage_round'],
             'Role_partic_var':self.participant.vars["Role"],
             'counter_party_id':self.player.get_others_in_group(),
@@ -512,10 +509,8 @@ class Nature(Page):
             'self_score':self.participant.vars['final_score'],
             'self_overall_ge_percent':round(self.participant.vars['overall_ge_percent']*100, 2),
             'nature':self.player.Nature,
-        'revwPg_round_points':self.player.participant.vars['round_base_points'],
-        'revwPg_self_ge_overallavg':self.participant.vars['overall_own_ge'],
-        'revwPg_counterpart_round_points':self.player.get_others_in_group()[0].participant.vars['round_base_points'],
-
+            'revwPg_self_ge_overallavg':self.participant.vars['overall_own_ge'],
+           
         }
 
 
@@ -529,7 +524,7 @@ class Nature(Page):
 class Results(Page):
 
     def is_displayed(self):
-        return (self.player.stage_round_count  <= self.session.config['stage_round_count'])
+        return (self.round_number  <= self.session.config['stage_round_count'])
 
 
     def vars_for_template(self):
@@ -557,13 +552,14 @@ class Results(Page):
             'self_ret_score':self.participant.vars["ret_score"], 
             'self_score':self.participant.vars['final_score'],
             'self_overall_ge_percent':self.participant.vars['overall_ge_percent']*100,
-            'self_round_payoff':self.player.round_payoff,
-            'counter_party_round_payoff':self.player.get_others_in_group()[0].round_payoff,
+            'self_round_payoff':self.player.postStage_round_points,
+            'counter_party_round_payoff':self.player.get_others_in_group()[0].postStage_round_points,
             'terminal_choice':self.player.terminal_choice,
 
             'self_avg_individual_exchange':self.player.postStage_self_individual_exchange,
             'self_ge':self.player.postStage_self_ge,
             'round_points':self.player.postStage_round_points,
+            'passiveplayerearnings':self.player.passivePlayerEarnings(),
             
   
         }
@@ -575,37 +571,65 @@ class Results(Page):
 
 
 
-class FinalResults(Page):
+class FinalResults1(Page):
+
+
+    form_model = models.Player
+    form_fields = ['q_birthMonth','q_birthYear','q_sex','q_languages','q_birthMonth','q_birthMonth','q_major','q_part3_A1strat','q_part3_F1strat','q_part3_A3strat']
 
     def is_displayed(self):
-        return (self.player.stage_round_count  > self.session.config['stage_round_count'])
-
+        return (self.round_number  >= self.session.config['stage_round_count'])
 
     def vars_for_template(self):
 
-        table_rows = []
-        roundNum = 1
-        final_score = 0
-        for prev_player in self.player.in_all_rounds():
-            if prev_player.round_payoff != None:
-                prev_player.payoff = c(prev_player.round_payoff) * prev_player.participant.vars['final_score_discounter']
-                final_score += prev_player.round_payoff
 
+        # Set Paid Active Round ###############
+        if 'paid_round' not in self.participant.vars:
+            self.participant.vars['paid_round'] = random.choice(range(self.session.config['stage_round_count'])) + 1
+        else: 
+            pass
+
+        self.player.paid_round = self.participant.vars['paid_round']
+
+
+        # Get passive player rounds ###
+
+
+        # Build Table #################
+        table_rows = []
+        for prev_player in self.player.in_all_rounds():
+            if prev_player.round_number != None:
                 row = {
-                    '00_round_number': roundNum ,
-                    '01_A_stage1':prev_player.A_stage1,
-                    '02_F_stage2':prev_player.F_stage2,
-                    '03_A_stage3':prev_player.A_stage3,
-                    "04_Nature":prev_player.Nature,
-                    '05_terminal_choice':prev_player.terminal_choice,
-                    '06_payoff':prev_player.payoff,
+                    'round_number': prev_player.round_number,
+                    'terminal_choice':prev_player.terminal_choice,
+                    'score': prev_player.postStage_round_points,
                 }
                 table_rows.append(row)
-                roundNum += 1
+                # Set active player round payoffs 
+                if prev_player.round_number == self.participant.vars['paid_round']:
+                    self.player.paid_active_round_score = prev_player.postStage_round_points
 
 
-        self.player.payoff = self.player.payoff + (self.participant.vars['final_score'] * self.participant.vars['final_score_discounter'])
-        self.player.payoff = round_up(self.player.payoff, 5)
+        # set passive player round payoffs. 
+        passive_player_earnings = []
+        for p in self.subsession.get_players():
+            for pp in p.in_all_rounds():
+                if pp.passive_Player_Earnings != None:
+                    passive_player_earnings.append(pp.passive_Player_Earnings)
+        if 'earnings_from_passivePlayerRound' not in self.participant.vars:
+            self.participant.vars['earnings_from_passivePlayerRound'] = random.choice(passive_player_earnings)
+        else: 
+            pass
+
+
+        total_points = (
+            self.participant.vars['final_score'] 
+            + self.participant.vars['earnings_from_passivePlayerRound'] 
+            + self.player.paid_active_round_score
+                ) * self.participant.vars['final_score_discounter']
+        total_points = c(total_points).to_real_world_currency(self.session)
+        self.player.payoff = round_up(total_points,5)
+
 
 
         #this logs payoffs into the otree "SessionPayments" screen, 
@@ -615,11 +639,13 @@ class FinalResults(Page):
 
         return {
         'debug': settings.DEBUG,
-        'part1_score':self.participant.vars["ret_score"],
-        'part2_score':self.participant.vars['final_score'],
-        'part2_cash':(self.participant.vars['final_score'] * self.participant.vars['final_score_discounter']),
-        'final_score':c(round(final_score,1)),
-        'part3_cash':self.player.payoff - (self.participant.vars['final_score'] * self.participant.vars['final_score_discounter']),
+        'paid_round':self.participant.vars['paid_round'],
+        'part2_cash':self.participant.vars['final_score'],
+        'part3_active':69,
+        'part3_passive':self.participant.vars['earnings_from_passivePlayerRound'],
+        'part3_passive2':passive_player_earnings,
+        'total_points':total_points,
+
         'table_rows': table_rows,
         'Role_self':self.player.player_role,
         'showupfee':self.session.config['participation_fee'],
@@ -627,6 +653,82 @@ class FinalResults(Page):
         'final_cash':(c(self.player.payoff).to_real_world_currency(self.session) + self.session.config['participation_fee'])
         }
 
+
+class FinalResults2(Page):
+
+    def is_displayed(self):
+        return (self.round_number  >= self.session.config['stage_round_count'])
+
+
+    def vars_for_template(self):
+
+
+        # Set Paid Active Round ###############
+        if 'paid_round' not in self.participant.vars:
+            self.participant.vars['paid_round'] = random.choice(range(self.session.config['stage_round_count'])) + 1
+        else: 
+            pass
+
+        self.player.paid_round = self.participant.vars['paid_round']
+
+
+        # Get passive player rounds ###
+
+
+        # Build Table #################
+        table_rows = []
+        for prev_player in self.player.in_all_rounds():
+            if prev_player.round_number != None:
+                row = {
+                    'round_number': prev_player.round_number,
+                    'terminal_choice':prev_player.terminal_choice,
+                    'score': prev_player.postStage_round_points,
+                }
+                table_rows.append(row)
+                # Set active player round payoffs 
+                if prev_player.round_number == self.participant.vars['paid_round']:
+                    self.player.paid_active_round_score = prev_player.postStage_round_points
+
+
+        # set passive player round payoffs. 
+        passive_player_earnings = []
+        for p in self.subsession.get_players():
+            for pp in p.in_all_rounds():
+                if pp.passive_Player_Earnings != None:
+                    passive_player_earnings.append(pp.passive_Player_Earnings)
+        if 'earnings_from_passivePlayerRound' not in self.participant.vars:
+            self.participant.vars['earnings_from_passivePlayerRound'] = random.choice(passive_player_earnings)
+        else: 
+            pass
+
+
+        total_points = (
+            self.participant.vars['final_score'] 
+            + self.participant.vars['earnings_from_passivePlayerRound'] 
+            + self.player.paid_active_round_score
+                ) * self.participant.vars['final_score_discounter']
+        total_points = c(total_points).to_real_world_currency(self.session)
+
+
+        #this logs payoffs into the otree "SessionPayments" screen, 
+        # it needs to come after prev_player.payoff is set
+        self.session.config['participation_fee'] = c(30).to_real_world_currency(self.session)
+        self.session.config['real_world_currency_per_point'] = decimal.Decimal(1.0)
+
+        return {
+        'debug': settings.DEBUG,
+        'paid_round':self.participant.vars['paid_round'],
+        'part2_cash':self.participant.vars['final_score'],
+        'part3_passive':self.participant.vars['earnings_from_passivePlayerRound'],
+        'part3_passive2':passive_player_earnings,
+        'total_points':total_points,
+
+        'table_rows': table_rows,
+        'Role_self':self.player.player_role,
+        'showupfee':self.session.config['participation_fee'],
+        'point_aed_convert':round(1/prev_player.participant.vars['final_score_discounter'],2),
+        'final_cash':(c(self.player.payoff).to_real_world_currency(self.session) + self.session.config['participation_fee'])
+        }
 
 page_sequence = [
     InitWaitPage,
@@ -645,5 +747,6 @@ page_sequence = [
     WaitPage_F2,
     Nature,
     Results,
-    FinalResults,
+    FinalResults1,
+    FinalResults2
     ]
