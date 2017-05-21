@@ -639,7 +639,7 @@ class FinalResults1(Page):
         #this logs payoffs into the otree "SessionPayments" screen, 
         # it needs to come after prev_player.payoff is set
         self.session.config['participation_fee'] = c(30).to_real_world_currency(self.session)
-        self.session.config['real_world_currency_per_point'] = decimal.Decimal(1.0)
+        # self.session.config['real_world_currency_per_point'] = decimal.Decimal(1.0)
 
         return {
         'debug': settings.DEBUG,
@@ -654,7 +654,7 @@ class FinalResults1(Page):
         'Role_self':self.player.player_role,
         'showupfee':self.session.config['participation_fee'],
         'point_aed_convert':round(1/prev_player.participant.vars['final_score_discounter'],2),
-        'final_cash':(c(self.player.payoff).to_real_world_currency(self.session) + self.session.config['participation_fee'])
+        'final_cash':((self.player.payoff) + self.session.config['participation_fee'])
         }
 
 
