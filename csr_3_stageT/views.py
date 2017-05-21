@@ -654,7 +654,7 @@ class FinalResults1(Page):
         'Role_self':self.player.player_role,
         'showupfee':self.session.config['participation_fee'],
         'point_aed_convert':round(1/prev_player.participant.vars['final_score_discounter'],2),
-        'final_cash':((self.player.payoff) + 30
+        'final_cash':c(self.player.payoff) + 30
         }
 
 
