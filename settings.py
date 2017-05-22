@@ -275,7 +275,7 @@ SESSION_CONFIGS = [
 
         },
     {
-        'name': 'CSR_t1',
+        'name': 'CSR_t2',
         'display_name': "CSR: T1: mpcr = .75; N1_prob = 0.75",
         'num_demo_participants': 4,
         'app_sequence': [
