@@ -105,7 +105,7 @@ class Player(BasePlayer):
     	doc="quiz question")
     quiz_sol = models.IntegerField(
     	doc="solution")
-    quiz_user_answer = models.PositiveIntegerField(
+    quiz_user_answer = models.FloatField(
         verbose_name='Your answer:',
         min = 0,
         max = 999,
