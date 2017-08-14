@@ -54,7 +54,7 @@ class TranscribeTask(Page):
         # set up messgaes in transcription task
         if self.player.in_previous_rounds()[-1].ret_final_score == None: #on very first task
             correct_last_round = "<br>"
-            ret_final_score = 20
+            ret_final_score = 0
         else: #all subsequent tasks
             ret_final_score = int(self.player.in_previous_rounds()[-1].ret_final_score)
             if self.player.in_previous_rounds()[-1].is_correct:

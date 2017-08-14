@@ -53,9 +53,11 @@ class Subsession(BaseSubsession):
 			if 'vcm_round_count' in self.session.config:
 			    p.participant.vars['vcm_round_count'] = self.session.config['vcm_round_count']
 			    vcm_round_count = self.session.config['vcm_round_count']
+			    self.session.vars['vcm_round_count'] = vcm_round_count
 			else:
 				p.participant.vars['vcm_round_count'] = Constants.vcm_rounds
-				vcm_round_count = self.session.config['vcm_round_count']
+				self.session.vars['vcm_round_count'] = Constants.vcm_rounds
+
 
 		paid_round = random.randint(1,vcm_round_count) #pick paid round
 		for p in self.get_players():

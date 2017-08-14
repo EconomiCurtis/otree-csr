@@ -21,12 +21,14 @@ class InitWaitPage(WaitPage):
     wait_for_all_groups = True
  
     def is_displayed(self):
+
+        self.participant.vars['stage_round'] = 1 #just setup stage_round counter. I do this after too. 
+
         return (self.round_number == 1)
  
     def after_all_players_arrive(self):
         # executed only once for the entire group.
   
-        self.participant.vars['stage_round'] = 1 #just setup stage_round counter. I do this after too. 
  
         # also done in next page!!
         players = self.subsession.get_players()

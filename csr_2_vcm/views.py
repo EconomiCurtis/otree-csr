@@ -22,7 +22,7 @@ class WaitPage1(WaitPage):
         return self.round_number == 1
 
     def after_all_players_arrive(self):
-        pass
+        self.session.vars['vcm_round_number'] = 1
 
     def vars_for_template(self):      
 
@@ -42,6 +42,7 @@ class Instructions(Page):
     def vars_for_template(self):
 
         self.participant.vars['vcm_round_number'] = 1
+        self.session.vars['vcm_round_number'] = 1
 
         ret_score = self.participant.vars["ret_score"]
 
@@ -58,17 +59,6 @@ class Instructions(Page):
             'op_scores':op_scores,
             'op_scores_sum':op_scores_sum,
         }
-
-class ShuffleWaitPage(WaitPage):
-    wait_for_all_groups = True
-
-    def is_displayed(self):
-        return self.participant.vars['vcm_round_number'] <= self.participant.vars['vcm_round_count']
-
-
-    def after_all_players_arrive(self):
-        if self.participant.vars['vcm_round_number'] <= self.participant.vars['vcm_round_count']:
-            self.subsession.group_randomly()
 
 
 
@@ -96,7 +86,7 @@ class SelectInvestment(Page):
         pass
 
     def is_displayed(self):
-        return self.round_number <= self.participant.vars['vcm_round_count']
+        return self.round_number <= self.session.vars['vcm_round_count']
 
     def group_exchange_percent_error_message(self, value):
         if not (value < self.session.config['GE_max'] or value > self.session.config['GE_min']):
@@ -114,8 +104,8 @@ class SelectInvestment(Page):
         op_scores_sum = sum(op_scores)
 
         return {
-            'vcm_round_number':self.participant.vars['vcm_round_number'],
-            'vcm_round_count_total':self.participant.vars['vcm_round_count'],
+            'vcm_round_number':self.session.vars['vcm_round_number'],
+            'vcm_round_count_total':self.session.vars['vcm_round_count'],
             'ret_score':ret_score,
             'op_scores':op_scores,
             'op_scores_sum':op_scores_sum,
@@ -132,14 +122,14 @@ class WaitPage2(WaitPage):
     def is_displayed(self):
         # if self.participant.vars['vcm_round_number'] <= self.participant.vars['vcm_round_count']:
         #     self.player.group_exchange_percent = float(self.player.group_exchange) / float(self.player.group_exchange + self.player.individual_exchange)
-        return self.round_number <= self.participant.vars['vcm_round_count']
+        return self.round_number <= self.session.vars['vcm_round_count']
 
 
 class SelectInvestment_Review(Page):
     wait_for_all_groups = True
 
     def is_displayed(self):
-        return self.round_number <= self.participant.vars['vcm_round_count']
+        return self.round_number <= self.session.vars['vcm_round_count']
 
 
     def vars_for_template(self):
@@ -193,7 +183,7 @@ class SelectInvestment_Review(Page):
         self.participant.vars['overall_ge_list'] = overall_ge_list
 
         return {
-            'vcm_round_number':self.participant.vars['vcm_round_number'],
+            'vcm_round_number':self.session.vars['vcm_round_number'],
             'ret_score':ret_score,
             'op_scores':op_scores,
             'op_scores_sum':op_scores_sum,
@@ -215,9 +205,25 @@ class SelectInvestment_Review(Page):
 
 
     def before_next_page(self):
-        self.player.vcm_round = self.participant.vars['vcm_round_number']
+        self.player.vcm_round = self.session.vars['vcm_round_number']
         self.participant.vars['vcm_round_number'] += 1
 
+
+class ShuffleWaitPage(WaitPage):
+    wait_for_all_groups = True
+
+    def is_displayed(self):
+        return self.session.vars['vcm_round_number'] <= self.session.vars['vcm_round_count']
+
+
+    def after_all_players_arrive(self):
+
+        self.session.vars['vcm_round_number'] = self.session.vars['vcm_round_number'] + 1
+        
+        if self.session.vars['vcm_round_number'] <= self.session.vars['vcm_round_count']:
+            self.subsession.group_randomly()
+
+            
 
 
 
@@ -225,8 +231,8 @@ class Part3_prep(Page):
     # timeout_seconds = 9000
 
     def is_displayed(self):
-        return ((self.participant.vars['vcm_round_number'] == (self.participant.vars['vcm_round_count'] + 1) )
-            & (self.round_number <= self.participant.vars['vcm_round_count']))
+        return ((self.session.vars['vcm_round_number'] == (self.session.vars['vcm_round_count'] + 1) )
+            & (self.round_number <= self.session.vars['vcm_round_count']))
     
 
     def vars_for_template(self):
@@ -324,11 +330,16 @@ class Part3_prep(Page):
 class WaitPage3(WaitPage):
 
     def is_displayed(self):
-        return ((self.participant.vars['vcm_round_number'] == (self.participant.vars['vcm_round_count'] + 1) )
-            & (self.round_number <= self.participant.vars['vcm_round_count']))
+        
+        self.participant.vars['vcm_round_number'] += 1
+        # this happens in shuffle wait page: self.session.vars['vcm_round_number'] += 1
+
+        return ((self.session.vars['vcm_round_number'] == (self.session.vars['vcm_round_count'] + 1) )
+            & (self.round_number <= self.session.vars['vcm_round_count']))
 
     def after_all_players_arrive(self):
-        self.participant.vars['vcm_round_number'] += 1
+        pass
+        
 
 
 

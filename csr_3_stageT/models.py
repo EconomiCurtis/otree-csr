@@ -71,6 +71,7 @@ class Subsession(BaseSubsession):
 			p.A3_F_mult = self.session.config['A3_F_mult']
 			p.N1_prob   = self.session.config['N1_prob']
 			p.stage_round_count = self.session.config['stage_round_count']
+			self.session.vars['stage_round_count'] = self.session.config['stage_round_count']
 
 
 class Group(BaseGroup):
