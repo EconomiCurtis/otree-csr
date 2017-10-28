@@ -5,3 +5,4 @@ numpy
 django-filters
 django-mathfilters
 django-filter==0.11.0
+scipy
